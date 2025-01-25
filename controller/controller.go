@@ -2,10 +2,16 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
+	helpers "github.com/sarthaksanjay/netflix-go/helper"
 	"github.com/sarthaksanjay/netflix-go/model"
+	"github.com/sarthaksanjay/netflix-go/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -13,19 +19,18 @@ import (
 // first make a connection string give by mongodb
 //
 
-const connectionString = ""
-
 const (
 	dbName = "netflix-go"
 )
 
-// create collection
-var moviesCollection *mongo.Collection
-
-func inti() {
+func init() {
 	// create client options
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	clientOption := options.Client().ApplyURI(connectionString)
+	clientOption := options.Client().ApplyURI(os.Getenv("DB_CONNECTION_STRING"))
 
 	// connect to mongodb
 
@@ -38,17 +43,25 @@ func inti() {
 
 	// collection instances
 
-	watchlistCollection := client.Database(dbName).Collection("watchlist")
-	moviesCollection := client.Database(dbName).Collection("movies")
+	utils.WatchlistCollection = client.Database(dbName).Collection("watchlist")
+	utils.MoviesCollection = client.Database(dbName).Collection("movies")
 
 	fmt.Println("Collection instance/ref are now ready!!")
 }
 
-func insertMovie(movie model.Movies) {
-	inserted, err := moviesCollection.InsertOne(context.Background(), movie)
-	if err != nil {
-		log.Fatal(err)
-	}
+func GetAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
 
-	fmt.Println("Inserted 1 movie in the db with id :", inserted.InsertedID)
+	allMovies := helpers.GetAllMovie()
+	json.NewEncoder(w).Encode(allMovies)
+}
+
+func CreateMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Allow-Content-Allow-Methods", "POST")
+
+	var movie model.Movies
+	json.NewDecoder(r.Body).Decode(&movie)
+	helpers.InsertMovie(movie)
+	json.NewEncoder(w).Encode(movie)
 }
