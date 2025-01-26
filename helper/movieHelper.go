@@ -1,18 +1,18 @@
-package helpers
+package helper
 
 import (
 	"context"
 	"fmt"
 	"log"
 
+	"github.com/sarthaksanjay/netflix-go/db"
 	"github.com/sarthaksanjay/netflix-go/model"
-	"github.com/sarthaksanjay/netflix-go/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func InsertMovie(movie model.Movies) {
-	inserted, err := utils.MoviesCollection.InsertOne(context.Background(), movie)
+	inserted, err := db.MoviesCollection.InsertOne(context.Background(), movie)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,7 +28,7 @@ func UpdateMovie(movieId string, key string, value string) {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{key: value}}
 
-	result, err := utils.MoviesCollection.UpdateOne(context.Background(), filter, update)
+	result, err := db.MoviesCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,7 +43,7 @@ func DeleteMovie(movieId string) {
 
 	filter := bson.M{"_id": id}
 
-	result, err := utils.MoviesCollection.DeleteOne(context.Background(), filter)
+	result, err := db.MoviesCollection.DeleteOne(context.Background(), filter)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func DeleteMovie(movieId string) {
 }
 
 func GetAllMovie() []bson.M {
-	cursor, err := utils.MoviesCollection.Find(context.Background(), bson.D{{}})
+	cursor, err := db.MoviesCollection.Find(context.Background(), bson.D{{}})
 	if err != nil {
 		log.Fatal(err)
 	}
