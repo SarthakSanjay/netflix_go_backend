@@ -21,6 +21,7 @@ const (
 var (
 	MoviesCollection    *mongo.Collection
 	WatchlistCollection *mongo.Collection
+	UserCollection      *mongo.Collection
 )
 
 func init() {
@@ -45,6 +46,7 @@ func init() {
 
 	WatchlistCollection = client.Database(dbName).Collection("watchlist")
 	MoviesCollection = client.Database(dbName).Collection("movies")
+	UserCollection = client.Database(dbName).Collection("user")
 
 	fmt.Println("Collection instance/ref are now ready!!")
 }
