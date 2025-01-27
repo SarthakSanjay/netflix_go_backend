@@ -66,12 +66,17 @@ func DeleteMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAllMovie(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Allow-Content-Allow-Methods", "DELETE")
+	count, err := helper.DeleteAllMovie()
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Error deleting All Movies"}, http.StatusInternalServerError)
+		return
+	}
+	response := map[string]interface{}{
+		"message": "successfull deleted all movies",
+		"count":   count,
+	}
 
-	count := helper.DeleteAllMovie()
-
-	json.NewEncoder(w).Encode(count)
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
 func GetMovieById(w http.ResponseWriter, r *http.Request) {
@@ -85,3 +90,44 @@ func GetMovieById(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(movie)
 }
+
+func UpdateMovie(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	if len(params["id"]) != 24 {
+		utils.SendJSONResponse(w, map[string]string{"error": "Invalid movie Id"}, http.StatusBadRequest)
+		return
+	}
+
+	var updates map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&updates)
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Invalid request payload"}, http.StatusBadRequest)
+		return
+	}
+
+	count, err := helper.UpdateMovie(params["id"], updates)
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Failed to update movie"}, http.StatusInternalServerError)
+	}
+
+	response := map[string]interface{}{
+		"message": "movie updated successfully",
+		"id":      params["id"],
+		"count":   count,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
+}
+
+// func SearchMovie() {
+// }
+//
+// func PopularMovie() {
+// }
+//
+// func RecommendedMovie() {
+// }
+//
+// func SimilarMovie() {
+// }
