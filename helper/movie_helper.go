@@ -21,19 +21,22 @@ func InsertMovie(movie model.Movies) (primitive.ObjectID, error) {
 	return inserted.InsertedID.(primitive.ObjectID), nil
 }
 
-func UpdateMovie(movieId string, key string, value string) {
+func UpdateMovie(movieId string, updates map[string]interface{}) (int64, error) {
 	id, err := primitive.ObjectIDFromHex(movieId)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Invalid movieId %v\n", err)
+		return 0, err
 	}
 	filter := bson.M{"_id": id}
-	update := bson.M{"$set": bson.M{key: value}}
+	update := bson.M{"$set": updates}
 
 	result, err := db.MoviesCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Unable to update movie : %v\n ", err)
+		return 0, err
 	}
 	fmt.Println("updated movie", result.ModifiedCount)
+	return result.ModifiedCount, nil
 }
 
 func DeleteMovie(movieId string) (int64, error) {
@@ -56,13 +59,14 @@ func DeleteMovie(movieId string) (int64, error) {
 	return result.DeletedCount, nil
 }
 
-func DeleteAllMovie() int64 {
+func DeleteAllMovie() (int64, error) {
 	movie, err := db.MoviesCollection.DeleteMany(context.Background(), bson.D{{}})
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error delete all movies : %v\n", err)
+		return 0, err
 	}
 	fmt.Println("Deleted all movies")
-	return movie.DeletedCount
+	return movie.DeletedCount, nil
 }
 
 func GetAllMovie(ctx context.Context) ([]bson.M, error) {
@@ -95,15 +99,27 @@ func GetAllMovie(ctx context.Context) ([]bson.M, error) {
 func GetMovieById(movieId string) (*model.Movies, error) {
 	id, err := primitive.ObjectIDFromHex(movieId)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Invalid movie id %v\n", err)
 	}
 	filter := bson.M{"_id": id}
 
 	var movie model.Movies
 	err = db.MoviesCollection.FindOne(context.Background(), filter).Decode(&movie)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Movie not found%v\n", err)
 	}
 
 	return &movie, nil
 }
+
+// func SearchMovie() {
+// }
+//
+// func PopularMovie() {
+// }
+//
+// func RecommendedMovie() {
+// }
+//
+// func SimilarMovie() {
+// }
