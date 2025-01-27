@@ -1,6 +1,10 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
 	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
@@ -13,15 +17,33 @@ type User struct {
 }
 
 type Movies struct {
-	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Name        string             `json:"name,omitempty"`
-	Description string             `json:"description,omitempty"`
-	Image       Images             `json:"image,omitempty"`
+	ID                primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Name              string             `json:"name,omitempty"`
+	Description       string             `json:"description,omitempty"`
+	Image             Images             `json:"image,omitempty"`
+	Genre             []string           `json:"genre,omitempty"`
+	ReleasedOn        int                `json:"releasedOn,omitempty"`
+	Duration          int                `json:"duration,omitempty"`
+	Rating            float64            `json:"rating,omitempty"`
+	Language          []string           `json:"language,omitempty"`
+	Cast              []string           `json:"cast,omitempty"`
+	Director          string             `json:"director,omitempty"`
+	TrailerUrl        string             `json:"trailer,omitempty"`
+	IsFeatured        bool               `json:"isFeatured,omitempty"`
+	Tags              []string           `json:"tags,omitempty"`
+	Availablity       []string           `json:"availablity,omitempty"`
+	AgeRating         string             `json:"ageRating,omitempty"`
+	Views             int64              `json:"views,omitempty"`
+	AudioLanguages    []string           `json:"audioLanguages,omitempty"`
+	SubtitleLanguages []string           `json:"subtitleLanguages,omitempty"`
+	AddedDate         time.Time          `json:"addedOn,omitempty"`
 }
 
 type Images struct {
-	Main   string `json:"main,omitempty"`
-	Poster string `json:"poster,omitempty"`
+	MovieID      primitive.ObjectID `json:"movieId,omitempty"`
+	ThumbnailUrl string             `json:"thumbnailUrl,omitempty"`
+	Screenshots  []string           `json:"screenshots,omitempty"`
+	Poster       string             `json:"poster,omitempty"`
 }
 
 type Wishlist struct {
