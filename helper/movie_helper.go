@@ -112,14 +112,97 @@ func GetMovieById(movieId string) (*model.Movies, error) {
 	return &movie, nil
 }
 
-// func SearchMovie() {
-// }
-//
-// func PopularMovie() {
-// }
+func SearchMovie(searchQuery string) ([]bson.M, error) {
+	if searchQuery == "" {
+		log.Println("Search query is empty")
+		return nil, fmt.Errorf("search query is empty")
+	}
+	filter := bson.M{
+		"$or": []bson.M{
+			{"name": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"description": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"genre": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"language": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"tags": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"director": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"cast": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"audioLanguages": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"subtitleLanguages": bson.M{"$regex": searchQuery, "$options": "i"}},
+		},
+	}
+
+	var movies []bson.M
+
+	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var movie bson.M
+		err := cursor.Decode(&movie)
+		if err != nil {
+			log.Printf("Error decoding movie %v\n", err)
+			continue
+		}
+
+		movies = append(movies, movie)
+
+	}
+
+	return movies, nil
+}
+
+func PopularMovie() ([]model.Movies, error) {
+	var movies []model.Movies
+	filter := bson.M{
+		"rating": bson.M{"$gt": 3},
+	}
+	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
+	if err != nil {
+		log.Printf("No movie found %v\n", err)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var movie model.Movies
+		err := cursor.Decode(&movie)
+		if err != nil {
+			log.Printf("Error decoding movie %v\n", err)
+			continue
+		}
+
+		movies = append(movies, movie)
+	}
+	return movies, nil
+}
+
 //
 // func RecommendedMovie() {
 // }
-//
-// func SimilarMovie() {
-// }
+
+func SimilarMovie(genres []string) ([]model.Movies, error) {
+	var movies []model.Movies
+	filter := bson.M{
+		"genre": bson.M{"$in": genres},
+	}
+
+	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
+	if err != nil {
+		log.Printf("Error finding movie %v\n", err)
+		return nil, err
+	}
+
+	for cursor.Next(context.Background()) {
+		var movie model.Movies
+		err := cursor.Decode(&movie)
+		if err != nil {
+			log.Fatalf("Error decoding movie%v\n", err)
+			continue
+		}
+		movies = append(movies, movie)
+	}
+	return movies, nil
+}
