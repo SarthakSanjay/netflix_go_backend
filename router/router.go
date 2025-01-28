@@ -10,12 +10,12 @@ func Router() *mux.Router {
 
 	// user routes
 
-	router.HandleFunc("/api/user", controller.CreateUser).Methods("POST")
-	router.HandleFunc("/api/user/{id}", controller.GetUser).Methods("GET")
-	router.HandleFunc("/api/user/{id}", controller.UpdateUser).Methods("PUT")
-	router.HandleFunc("/api/user/{id}", controller.DeleteUser).Methods("DELETE")
-	router.HandleFunc("/api/users", controller.DeleteAllUser).Methods("DELETE")
-	router.HandleFunc("/api/users", controller.CreateUser).Methods("GET")
+	// router.HandleFunc("/api/user", controller.CreateUser).Methods("POST")
+	// router.HandleFunc("/api/user/{id}", controller.GetUser).Methods("GET")
+	// router.HandleFunc("/api/user/{id}", controller.UpdateUser).Methods("PUT")
+	// router.HandleFunc("/api/user/{id}", controller.DeleteUser).Methods("DELETE")
+	// router.HandleFunc("/api/users", controller.DeleteAllUser).Methods("DELETE")
+	// router.HandleFunc("/api/users", controller.CreateUser).Methods("GET")
 
 	// movies routes
 	router.HandleFunc("/api/movies", controller.GetAllMovies).Methods("GET")
@@ -23,7 +23,12 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/movie", controller.CreateMovie).Methods("POST")
 	router.HandleFunc("/api/movie/{id}", controller.GetMovieById).Methods("GET")
 	router.HandleFunc("/api/movie/{id}", controller.DeleteMovie).Methods("DELETE")
-
+	router.HandleFunc("/api/movie/{id}", controller.UpdateMovie).Methods("PUT")
+	router.HandleFunc("/api/movie/search", controller.SearchMovie).Methods("GET")
+	router.HandleFunc("/api/movie/popular", controller.PopularMovie).Methods("GET")
+	// router.HandleFunc("/api/movie/recommended", controller.RecommendedMovie).Methods("GET")
+	router.HandleFunc("/api/movie/{id}/similar", controller.SimilarMovie).Methods("GET")
+	//
 	// watchlist routes
 
 	// router.HandleFunc("/api/watchlist/{id}", .GetUserWatchlist())
