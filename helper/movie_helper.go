@@ -69,7 +69,7 @@ func DeleteAllMovie() (int64, error) {
 	return movie.DeletedCount, nil
 }
 
-func GetAllMovie(ctx context.Context) ([]bson.M, error) {
+func GetAllMovie(ctx context.Context) ([]model.Movies, error) {
 	cursor, err := db.MoviesCollection.Find(ctx, bson.D{{}})
 	if err != nil {
 		log.Printf("Error finding movies %v\n", err)
@@ -78,10 +78,10 @@ func GetAllMovie(ctx context.Context) ([]bson.M, error) {
 
 	defer cursor.Close(ctx)
 
-	var movies []bson.M
+	var movies []model.Movies
 
 	for cursor.Next(context.Background()) {
-		var movie bson.M
+		var movie model.Movies
 		err := cursor.Decode(&movie)
 		if err != nil {
 			log.Printf("Error decoding movie %v\n", err)
@@ -112,7 +112,7 @@ func GetMovieById(movieId string) (*model.Movies, error) {
 	return &movie, nil
 }
 
-func SearchMovie(searchQuery string) ([]bson.M, error) {
+func SearchMovie(searchQuery string) ([]model.Movies, error) {
 	if searchQuery == "" {
 		log.Println("Search query is empty")
 		return nil, fmt.Errorf("search query is empty")
@@ -131,7 +131,7 @@ func SearchMovie(searchQuery string) ([]bson.M, error) {
 		},
 	}
 
-	var movies []bson.M
+	var movies []model.Movies
 
 	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
 	if err != nil {
@@ -140,7 +140,7 @@ func SearchMovie(searchQuery string) ([]bson.M, error) {
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
-		var movie bson.M
+		var movie model.Movies
 		err := cursor.Decode(&movie)
 		if err != nil {
 			log.Printf("Error decoding movie %v\n", err)
