@@ -12,7 +12,7 @@ type User struct {
 	Email        string             `json:"email,omitempty"`
 	PhoneNo      int                `json:"_"`
 	ProfileImage string             `json:"image,omitempty"`
-	Wishlist     Wishlist
+	Watchlist    Watchlist
 	History      History
 }
 
@@ -46,7 +46,7 @@ type Images struct {
 	Poster       string             `json:"poster,omitempty"`
 }
 
-type Wishlist struct {
+type Watchlist struct {
 	UserId primitive.ObjectID `json:"_id,omitempty"`
 	Movies []Movies           `json:"movies,omitempty"`
 }
