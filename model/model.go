@@ -6,14 +6,45 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type Status int
+
+const (
+	Active Status = iota
+	Inactive
+	Cancelled
+	Suspended
+)
+
+func (s Status) String() string {
+	return [...]string{"Active", "Inactive", "Cancelled", "Suspended"}[s]
+}
+
 type User struct {
-	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Username     string             `json:"username,omitempty"`
-	Email        string             `json:"email,omitempty"`
-	PhoneNo      int                `json:"_"`
-	ProfileImage string             `json:"image,omitempty"`
-	Watchlist    Watchlist
-	History      History
+	ID               primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username         string             `json:"username,omitempty"`
+	Email            string             `json:"email,omitempty"`
+	Password         string             `json:"-"`
+	PhoneNo          string             `json:"-"`
+	CreatedAt        time.Time          `json:"createdAt,omitempty"`
+	UpdatedAt        time.Time          `json:"updatedAt,omitempty"`
+	Profiles         []Profile          `json:"profiles,omitempty"`
+	Subscription     Subscription       `json:"-"`
+	RefreshTokens    []RefreshToken     `json:"refresh_tokens,omitempty" bson:"refresh_tokens,omitempty"`
+	ResetToken       string             `json:"resetToken,omitempty"`
+	ResetTokenExpiry time.Time          `json:"resetTokenExp,omitempty"`
+}
+
+type RefreshToken struct {
+	Token     string    `bson:"token"`
+	ExpiresAt time.Time `bson:"expires_at"`
+}
+
+type Profile struct {
+	Id        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Name      string             `json:"name,omitempty"`
+	Avatar    string             `json:"avtar,omitempty"`
+	Watchlist []Watchlist        `json:"watchlist,omitempty"`
+	History   []History          `json:"history,omitempty"`
 }
 
 type Movies struct {
@@ -47,11 +78,49 @@ type Images struct {
 }
 
 type Watchlist struct {
-	UserId primitive.ObjectID `json:"_id,omitempty"`
-	Movies []Movies           `json:"movies,omitempty"`
+	UserId    primitive.ObjectID `json:"userId,omitempty"`
+	ContentId primitive.ObjectID `json:"contentId,omitempty"`
+	AddedAt   time.Time          `json:"addedAt,omitempty"`
 }
 
 type History struct {
-	UserId primitive.ObjectID `json:"_id,omitempty"`
-	Movies []Movies           `json:"movies,omitempty"`
+	UserId    primitive.ObjectID `json:"userId,omitempty"`
+	ContentId primitive.ObjectID `json:"contentId,omitempty"`
+	AddedAt   time.Time          `json:"addedAt,omitempty"`
+}
+
+type Subscription struct {
+	Plan      string    `json:"plan,omitempty"`
+	Status    Status    `json:"status,omitempty"`
+	StartDate time.Time `json:"startDate,omitempty"`
+	EndDate   time.Time `json:"endDate,omitempty"`
+	Payments  []Payment `json:"payments,omitempty"`
+}
+
+type Payment struct {
+	PaymentDate   time.Time `json:"paymentDate,omitempty"`
+	Amount        float64   `json:"amount,omitempty"`
+	PaymentMethod string    `json:"paymentMethod,omitempty"`
+}
+
+type Playback struct {
+	ContentId   primitive.ObjectID `json:"contentId,omitempty"`
+	Progress    float64            `json:"progress,omitempty"`
+	LastWatched time.Time          `json:"lastWatched,omitempty"`
+}
+
+type Review struct {
+	ID        primitive.ObjectID `json:"_id,omitempty"`
+	ContentId primitive.ObjectID `json:"contentId,omitempty"`
+	UserId    primitive.ObjectID `json:"userId,omitempty"`
+	Text      string             `json:"text,omitempty"`
+	CreatedAt time.Time          `json:"createdAt,omitempty"`
+}
+
+type Rating struct {
+	ID        primitive.ObjectID `json:"_id,omitempty"`
+	ContentId primitive.ObjectID `json:"contentId,omitempty"`
+	UserId    primitive.ObjectID `json:"userId,omitempty"`
+	Rating    int                `json:"rating,omitempty"`
+	CreatedAt time.Time          `json:"createdAt,omitempty"`
 }
