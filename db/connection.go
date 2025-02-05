@@ -11,9 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// first make a connection string give by mongodb
-//
-
 const (
 	dbName = "netflix-go"
 )
@@ -22,31 +19,55 @@ var (
 	MoviesCollection    *mongo.Collection
 	WatchlistCollection *mongo.Collection
 	UserCollection      *mongo.Collection
+	client              *mongo.Client // Store the client to close it later
 )
 
-func init() {
-	// create client options
+// ConnectDB initializes the database connection
+func ConnectDB() {
+	// Load environment variables
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error loading .env file:", err)
 	}
 
-	clientOption := options.Client().ApplyURI(os.Getenv("DB_CONNECTION_STRING"))
+	// Get MongoDB connection string
+	dbURI := os.Getenv("DB_CONNECTION_STRING")
+	if dbURI == "" {
+		log.Fatal("DB_CONNECTION_STRING is not set in .env")
+	}
 
-	// connect to mongodb
+	// Create client options
+	clientOptions := options.Client().ApplyURI(dbURI)
 
-	client, err := mongo.Connect(context.TODO(), clientOption)
+	// Connect to MongoDB
+	client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error connecting to MongoDB:", err)
 	}
 
-	fmt.Println("MongoDB conneciton established successfully")
+	// Verify connection
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal("Could not ping MongoDB:", err)
+	}
 
-	// collection instances
+	fmt.Println("✅ MongoDB connection established successfully!")
 
+	// Assign collections
 	WatchlistCollection = client.Database(dbName).Collection("watchlist")
 	MoviesCollection = client.Database(dbName).Collection("movies")
 	UserCollection = client.Database(dbName).Collection("user")
 
-	fmt.Println("Collection instance/ref are now ready!!")
+	fmt.Println("✅ Collection instances are ready!")
+}
+
+// DisconnectDB closes the MongoDB connection
+func DisconnectDB() {
+	if client != nil {
+		err := client.Disconnect(context.TODO())
+		if err != nil {
+			log.Fatal("Error closing MongoDB connection:", err)
+		}
+		fmt.Println("✅ MongoDB connection closed.")
+	}
 }
