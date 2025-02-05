@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/sarthaksanjay/netflix-go/helper"
 	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/services"
@@ -21,61 +21,99 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	message, accessToken, err := helper.CreateUser(user)
-	fmt.Println("messssssssage", message)
+	accessToken, refreshToken, err := helper.CreateUser(user)
 	if err != nil {
-		statusCode := http.StatusInternalServerError
-
-		// Handle "user already exists" separately
-		if message == "user already exists" {
-			statusCode = http.StatusConflict
-		}
-
 		utils.SendJSONResponse(w, map[string]interface{}{
-			"error": message,
-		}, statusCode)
+			"error": "user already exist please login",
+		}, http.StatusInternalServerError)
 		return
 	}
 
 	// Set auth cookies
-	services.SetTokenCookies(w, accessToken)
+	services.SetTokenCookies(w, "access_token", accessToken)
+	services.SetTokenCookies(w, "refresh_token", refreshToken)
 
 	// Send success response
 	utils.SendJSONResponse(w, map[string]interface{}{
-		"message":     "success",
-		"accessToken": accessToken,
+		"message":      "success",
+		"accessToken":  accessToken,
+		"refreshToken": refreshToken,
 	}, http.StatusOK)
 }
 
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	json.NewDecoder(r.Body).Decode(&user)
-	isLoggedIn, _ := helper.LoginUser(user)
+
+	isLoggedIn, accessToken, refreshToken := helper.LoginUser(user)
 
 	if !isLoggedIn {
 		utils.SendJSONResponse(w, map[string]string{"error": "login failed"}, http.StatusInternalServerError)
 		return
 	}
+	services.SetTokenCookies(w, "access_token", accessToken)
+	services.SetTokenCookies(w, "refresh_token", refreshToken)
 
-	utils.SendJSONResponse(w, map[string]string{"message": "login success"}, http.StatusOK)
+	response := map[string]interface{}{
+		"message":      "success",
+		"accessToken":  accessToken,
+		"refreshToken": refreshToken,
+	}
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var user map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&user)
+
+	// params := mux.Vars(r)
+
+	// count, err := helper.UpdateUser(params["id"], user)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	deletedUser, err := helper.DeleteUser(params["id"])
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "error deleting user"}, http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"message": "user deleted successfully",
+		"user":    deletedUser,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
 func DeleteAllUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	user, err := helper.GetUser(params["id"])
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "error finding user"}, http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"message": "success",
+		"user":    user,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
 func GetAllUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Allow-Content-Allow-Methods", "POST")
-
 	users := helper.GetAllUser()
-	json.NewEncoder(w).Encode(users)
+
+	utils.SendJSONResponse(w, map[string]interface{}{
+		"message": "success",
+		"users":   users,
+		"total":   len(users),
+	}, http.StatusOK)
 }
