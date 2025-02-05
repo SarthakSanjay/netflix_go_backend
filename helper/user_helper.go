@@ -15,7 +15,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func CreateUser(user model.User) (interface{}, string, error) { // register
+func CreateUser(user model.User) (string, string, error) { // register
+	fmt.Println("-----------------------user---------------email ---------", user.Email, user.Username)
 
 	var existingUser model.User
 
@@ -30,12 +31,6 @@ func CreateUser(user model.User) (interface{}, string, error) { // register
 	if err != nil && err != mongo.ErrNoDocuments {
 		log.Printf("error finding user: %v\n", err)
 		return "error finding user", "", err
-	}
-
-	fmt.Println("existingUser", existingUser)
-	if err == nil { // User exists
-		log.Printf("user already exists: %s\n", user.Email)
-		return "user already exists", "", err
 	}
 
 	password, err := utils.HashedPassword(user.Password)
@@ -69,8 +64,9 @@ func CreateUser(user model.User) (interface{}, string, error) { // register
 
 	update := bson.M{
 		"$set": bson.M{
-			"refresh_tokens": []model.RefreshToken{
-				{Token: refreshToken, ExpiresAt: time.Now().Add(7 * 24 * time.Hour)},
+			"refresh_tokens": model.RefreshToken{
+				Token:     refreshToken,
+				ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
 			},
 		},
 	}
@@ -81,42 +77,41 @@ func CreateUser(user model.User) (interface{}, string, error) { // register
 		return "Error updating refresh token", "", err
 	}
 
-	return result.InsertedID, accessToken, nil
+	return accessToken, refreshToken, nil
 }
 
 // login
-func LoginUser(user model.User) map[string]interface{} {
+func LoginUser(user model.User) (bool, string, string) {
 	filter := bson.M{"email": user.Email}
 	var userF model.User
 	err := db.UserCollection.FindOne(context.Background(), filter).Decode(&userF)
 	if err != nil {
 		log.Printf("Invalid email or password%v\n", err)
-		return map[string]interface{}{"error": "Invalid email or password"}
+		return false, "", ""
 	}
 	hashedPassword := userF.Password
 	if !utils.ComparePassword(hashedPassword, user.Password) {
 		log.Printf("Incorrect password ")
-		return map[string]interface{}{"error": "password is incorrect"}
-
+		return false, "", ""
 	}
 
 	accessToken, err := services.GenerateAccessToken(userF.ID, user.Email)
 	if err != nil {
 		log.Printf("Error generation access token %v\n", err)
-		return map[string]interface{}{"error": "error generating accessToken"}
+		return false, "", ""
 	}
 
 	refreshToken, err := services.GenerateRefreshToken(userF.ID, user.Email)
 	if err != nil {
 		log.Printf("Error generation refresh token %v\n", err)
-		return map[string]interface{}{"error": "error generating refreshToken"}
-
+		return false, "", ""
 	}
 
 	update := bson.M{
-		"$push": bson.M{
-			"refresh_tokens": []model.RefreshToken{
-				{Token: refreshToken, ExpiresAt: time.Now().Add(7 * 24 * time.Hour)},
+		"$set": bson.M{
+			"refresh_tokens": model.RefreshToken{
+				Token:     refreshToken,
+				ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
 			},
 		},
 	}
@@ -124,26 +119,57 @@ func LoginUser(user model.User) map[string]interface{} {
 	_, err = db.UserCollection.UpdateOne(context.Background(), bson.M{"_id": userF.ID}, update)
 	if err != nil {
 		log.Printf("Error updating refresh token %v\n", err)
-		return map[string]interface{}{"error": "error updating refresh token"}
+		return false, "", ""
 	}
-	return map[string]interface{}{
-		"message":      "success",
-		"isLoggedIn":   true,
-		"accessToken":  accessToken,
-		"refreshToken": refreshToken,
-	}
+	return true, accessToken, refreshToken
 }
 
-func UpdateUser() {
+func UpdateUser(userId primitive.ObjectID, updates map[string]interface{}) (int, error) {
+	filter := bson.M{"_id": userId}
+	update := bson.M{"$set": updates}
+	result, err := db.UserCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Printf("Error finding and updating user %v\n", err)
+		return 0, err
+	}
+
+	return int(result.ModifiedCount), nil
 }
 
-func DeleteUser() {
+func DeleteUser(userId string) (model.User, error) {
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Printf("Invalid movie id %v\n", err)
+	}
+	var deletedUser model.User
+	filter := bson.M{"_id": id}
+	err = db.UserCollection.FindOneAndDelete(context.Background(), filter).Decode(&deletedUser)
+	if err != nil {
+		log.Println("User not found")
+		return model.User{}, err
+	}
+
+	return deletedUser, nil
 }
 
 func DeleteAllUser() {
 }
 
-func GetUser() {
+func GetUser(userId string) (model.User, error) {
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Printf("Invalid movie id %v\n", err)
+	}
+	var user model.User
+	filter := bson.M{"_id": id}
+
+	err = db.UserCollection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		log.Printf("Error find user %v\n", err)
+		return model.User{}, err
+	}
+
+	return user, nil
 }
 
 func GetAllUser() []model.User {
