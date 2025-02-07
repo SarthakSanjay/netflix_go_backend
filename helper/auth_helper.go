@@ -35,8 +35,9 @@ func RefreshToken(userId primitive.ObjectID) (string, string, error) {
 
 	update := bson.M{
 		"$set": bson.M{
-			"refresh_tokens": []model.RefreshToken{
-				{Token: refreshToken, ExpiresAt: time.Now().Add(7 * 24 * time.Hour)},
+			"refresh_tokens": model.RefreshToken{
+				Token:     refreshToken,
+				ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
 			},
 		},
 	}
