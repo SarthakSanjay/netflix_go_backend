@@ -2,8 +2,10 @@ package helper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/sarthaksanjay/netflix-go/db"
 	"github.com/sarthaksanjay/netflix-go/model"
@@ -21,14 +23,87 @@ func InsertMovie(movie model.Movies) (primitive.ObjectID, error) {
 	return inserted.InsertedID.(primitive.ObjectID), nil
 }
 
-func UpdateMovie(movieId string, updates map[string]interface{}) (int64, error) {
+func UpdateMovie(movieId string, updates model.Movies) (int64, error) {
 	id, err := primitive.ObjectIDFromHex(movieId)
 	if err != nil {
 		log.Printf("Invalid movieId %v\n", err)
 		return 0, err
 	}
+
+	updateFields := bson.M{}
+
+	if updates.Name != "" {
+		updateFields["name"] = updates.Name
+	}
+
+	if updates.Description != "" {
+		updateFields["description"] = updates.Description
+	}
+
+	if len(updates.Genre) > 0 {
+		updateFields["genre"] = updates.Genre
+	}
+
+	if updates.ReleasedOn != 0 {
+		updateFields["releasedOn"] = updates.ReleasedOn
+	}
+
+	if updates.Duration != 0 {
+		updateFields["duration"] = updates.Duration
+	}
+
+	if updates.Rating != 0 {
+		updateFields["rating"] = updates.Rating
+	}
+
+	if len(updates.Language) > 0 {
+		updateFields["language"] = updates.Language
+	}
+
+	if len(updates.Cast) > 0 {
+		updateFields["cast"] = updates.Cast
+	}
+
+	if updates.Director != "" {
+		updateFields["director"] = updates.Director
+	}
+
+	if updates.TrailerUrl != "" {
+		updateFields["trailer"] = updates.TrailerUrl
+	}
+
+	if len(updates.Tags) > 0 {
+		updateFields["tags"] = updates.Tags
+	}
+
+	if len(updates.Availablity) > 0 {
+		updateFields["availablity"] = updates.Availablity
+	}
+
+	if updates.AgeRating != "" {
+		updateFields["ageRating"] = updates.AgeRating
+	}
+
+	if updates.Views != 0 {
+		updateFields["views"] = updates.Views
+	}
+
+	if len(updates.AudioLanguages) > 0 {
+		updateFields["audioLanguages"] = updates.AudioLanguages
+	}
+
+	if len(updates.SubtitleLanguages) > 0 {
+		updateFields["subtitleLanguages"] = updates.SubtitleLanguages
+	}
+
+	updateFields["addedOn"] = time.Now()
+
+	if len(updateFields) == 0 {
+		return 0, errors.New("no fields to update")
+	}
+
 	filter := bson.M{"_id": id}
-	update := bson.M{"$set": updates}
+	update := bson.M{"$set": updateFields}
 
 	result, err := db.MoviesCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
