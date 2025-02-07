@@ -8,6 +8,8 @@ require (
 	go.mongodb.org/mongo-driver v1.17.2
 )
 
+require github.com/rs/cors v1.11.1 // indirect
+
 require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gorilla/mux v1.8.1
