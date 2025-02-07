@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -63,12 +64,53 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	var user map[string]interface{}
+	var user model.User
+	params := mux.Vars(r)
 	json.NewDecoder(r.Body).Decode(&user)
 
-	// params := mux.Vars(r)
+	fmt.Println("user is ", user)
+	count, err := helper.UpdateUser(params["id"], user)
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "unable to update user"}, http.StatusInternalServerError)
+		return
+	}
 
-	// count, err := helper.UpdateUser(params["id"], user)
+	res := map[string]interface{}{
+		"message":      "success",
+		"updatedCount": count,
+	}
+	utils.SendJSONResponse(w, res, http.StatusOK)
+}
+
+func UpdateUserRole(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var reqBody struct {
+		Role model.Role `json:"role"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Invalid request body"}, http.StatusBadRequest)
+		return
+	}
+
+	if !reqBody.Role.IsValid() {
+		utils.SendJSONResponse(w, map[string]string{"error": "Invalid role provided"}, http.StatusBadRequest)
+		return
+	}
+
+	updateUser, err := helper.UpdateUserRole(params["id"], reqBody.Role)
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Unable to update user role"}, http.StatusInternalServerError)
+		return
+	}
+
+	res := map[string]interface{}{
+		"message":     "success",
+		"newRole":     model.RoleAdmin,
+		"updateCount": updateUser,
+	}
+
+	utils.SendJSONResponse(w, res, http.StatusOK)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -89,6 +131,18 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAllUser(w http.ResponseWriter, r *http.Request) {
+	deletedCount, err := helper.DeleteAllUser()
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Unable to delete"}, http.StatusInternalServerError)
+		return
+	}
+
+	res := map[string]interface{}{
+		"message":      "success",
+		"deletedCount": deletedCount,
+	}
+
+	utils.SendJSONResponse(w, res, http.StatusOK)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -117,3 +171,7 @@ func GetAllUser(w http.ResponseWriter, r *http.Request) {
 		"total":   len(users),
 	}, http.StatusOK)
 }
+
+// func AddNewProfile(w http.ResponseWriter , r *http.Request){
+//
+// }
