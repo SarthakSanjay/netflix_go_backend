@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,20 +10,21 @@ import (
 	"github.com/sarthaksanjay/netflix-go/utils"
 )
 
+type contextKey string
+
+const UserContextKey contextKey = "user"
+
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		accessSecret := []byte(os.Getenv("ACCESS_SECRET"))
-
-		tokenString, err := services.GetTokenFromCookie(r)
-
+		tokenString, err := services.GetTokenFromCookie("access_token", r)
 		if err != nil || tokenString == "" {
 			utils.SendJSONResponse(w, map[string]string{"message": "access token is missing please login"}, http.StatusUnauthorized)
 			return
 		}
 
-		token, claims, err := services.VerifyToken(tokenString, accessSecret)
+		token, claims, err := services.VerifyToken(tokenString, []byte(os.Getenv("ACCESS_SECRET")))
 		if err != nil {
-			fmt.Println("error", err)
+			fmt.Println("error in auth", err)
 			utils.SendJSONResponse(w, map[string]interface{}{
 				"error": "unauthorized",
 				"err":   err,
@@ -34,8 +36,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			utils.SendJSONResponse(w, map[string]string{"error": "unauthorized token invalid"}, http.StatusUnauthorized)
 			return
 		}
-		fmt.Println("claims", claims)
+		// fmt.Println("claims", claims)
 
+		ctx := context.WithValue(r.Context(), UserContextKey, claims)
+		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
 }
