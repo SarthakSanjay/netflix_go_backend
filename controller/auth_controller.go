@@ -1,0 +1,47 @@
+package controller
+
+import (
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/sarthaksanjay/netflix-go/helper"
+	"github.com/sarthaksanjay/netflix-go/services"
+	"github.com/sarthaksanjay/netflix-go/utils"
+)
+
+func RefreshTokens(w http.ResponseWriter, r *http.Request) {
+	// refreshSecret := os.Getenv("REFRESH_SECRET")
+	rs, _ := r.Cookie("refresh_token")
+	fmt.Println("rs", rs)
+
+	token, err := services.GetTokenFromCookie("refresh_token", r)
+	if err != nil {
+		fmt.Println("error", err)
+		utils.SendJSONResponse(w, map[string]string{"error": "cannot retrive refresh_token"}, http.StatusInternalServerError)
+		return
+	}
+
+	_, claims, err := services.VerifyToken(token, []byte(os.Getenv("REFRESH_SECRET")))
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "cannot retrive refresh_token"}, http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println("token", token)
+	fmt.Println("claims", claims)
+
+	accessToken, refreshToken, err := helper.RefreshToken(claims.UserId)
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]error{"error": err}, http.StatusInternalServerError)
+		return
+	}
+	services.SetTokenCookies(w, "access_token", accessToken)
+	services.SetTokenCookies(w, "refresh_token", refreshToken)
+
+	utils.SendJSONResponse(w, map[string]string{
+		"message":      "success",
+		"accessToken":  accessToken,
+		"refreshToken": refreshToken,
+	}, http.StatusOK)
+}
