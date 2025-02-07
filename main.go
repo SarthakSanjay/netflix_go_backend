@@ -15,7 +15,7 @@ func main() {
 	fmt.Println("Netflix Apis")
 	err := godotenv.Load("./.env")
 	if err != nil {
-		log.Fatal("Error loading .env file:", err)
+		log.Println("Error loading .env file:", err)
 	}
 
 	r := router.Router()
@@ -33,7 +33,7 @@ func main() {
 	handler := c.Handler(r)
 
 	fmt.Println("Server is getting started...")
-
 	fmt.Println("Server listing on port 4000")
+
 	log.Fatal(http.ListenAndServe(":4000", handler))
 }
