@@ -105,7 +105,7 @@ func UpdateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updates map[string]interface{}
+	var updates model.Movies
 	err := json.NewDecoder(r.Body).Decode(&updates)
 	if err != nil {
 		utils.SendJSONResponse(w, map[string]string{"error": "Invalid request payload"}, http.StatusBadRequest)
