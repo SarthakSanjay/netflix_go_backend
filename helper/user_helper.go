@@ -2,7 +2,7 @@ package helper
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log"
 	"time"
 
@@ -16,8 +16,6 @@ import (
 )
 
 func CreateUser(user model.User) (string, string, error) { // register
-	fmt.Println("-----------------------user---------------email ---------", user.Email, user.Username)
-
 	var existingUser model.User
 
 	filter := bson.M{
@@ -124,9 +122,30 @@ func LoginUser(user model.User) (bool, string, string) {
 	return true, accessToken, refreshToken
 }
 
-func UpdateUser(userId primitive.ObjectID, updates map[string]interface{}) (int, error) {
-	filter := bson.M{"_id": userId}
-	update := bson.M{"$set": updates}
+func UpdateUser(userId string, updates model.User) (int, error) {
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Printf("Error finding and updating user %v\n", err)
+		return 0, err
+
+	}
+
+	updateFields := bson.M{}
+	if updates.Username != "" {
+		updateFields["username"] = updates.Username
+	}
+	if updates.PhoneNo != "" {
+		updateFields["phoneNo"] = updates.PhoneNo
+	}
+
+	updateFields["updatedAt"] = time.Now()
+
+	if len(updateFields) == 0 {
+		return 0, errors.New("no fields to update")
+	}
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": updateFields}
+
 	result, err := db.UserCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Printf("Error finding and updating user %v\n", err)
@@ -139,7 +158,8 @@ func UpdateUser(userId primitive.ObjectID, updates map[string]interface{}) (int,
 func DeleteUser(userId string) (model.User, error) {
 	id, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
-		log.Printf("Invalid movie id %v\n", err)
+		log.Printf("Invalid user id %v\n", err)
+		return model.User{}, err
 	}
 	var deletedUser model.User
 	filter := bson.M{"_id": id}
@@ -152,13 +172,22 @@ func DeleteUser(userId string) (model.User, error) {
 	return deletedUser, nil
 }
 
-func DeleteAllUser() {
+func DeleteAllUser() (int64, error) {
+	filter := bson.M{}
+	result, err := db.UserCollection.DeleteMany(context.Background(), filter)
+	if err != nil {
+		log.Println("Unable to delete")
+		return 0, err
+	}
+
+	return result.DeletedCount, nil
 }
 
 func GetUser(userId string) (model.User, error) {
 	id, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
-		log.Printf("Invalid movie id %v\n", err)
+		log.Printf("Invalid user id %v\n", err)
+		return model.User{}, err
 	}
 	var user model.User
 	filter := bson.M{"_id": id}
@@ -189,4 +218,31 @@ func GetAllUser() []model.User {
 	}
 
 	return users
+}
+
+func UpdateUserRole(userId string, newRole model.Role) (int64, error) {
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Printf("Invalid user id %v\n", err)
+		return 0, err
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"role":       newRole,
+			"updated_At": time.Now(),
+		},
+	}
+
+	result, err := db.UserCollection.UpdateByID(context.Background(), id, update)
+	if err != nil {
+		log.Printf("unable to update user %v\n", err)
+		return 0, nil
+	}
+
+	if result.MatchedCount == 0 {
+		return 0, errors.New("User not found")
+	}
+
+	return result.ModifiedCount, nil
 }
