@@ -9,12 +9,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var (
-	accessSecret  = os.Getenv("ACCESS_SECRET")
-	refreshSecret = os.Getenv("REFRESH_SECRET")
-	resetSecret   = os.Getenv("RESET_SECRET")
-)
-
 type Claims struct {
 	jwt.RegisteredClaims
 	Email  string             `json:"email,omitempty"`
@@ -43,15 +37,15 @@ func GenerateJWT(userId primitive.ObjectID, email string, secret []byte, expiry 
 }
 
 func GenerateAccessToken(userId primitive.ObjectID, email string) (string, error) {
-	return GenerateJWT(userId, email, []byte(accessSecret), 15*time.Minute)
+	return GenerateJWT(userId, email, []byte(os.Getenv("ACCESS_SECRET")), 15*time.Minute)
 }
 
 func GenerateRefreshToken(userId primitive.ObjectID, email string) (string, error) {
-	return GenerateJWT(userId, email, []byte(refreshSecret), 7*24*time.Hour)
+	return GenerateJWT(userId, email, []byte(os.Getenv("REFRESH_SECRET")), 7*24*time.Hour)
 }
 
 func GenerateResetToken(userId primitive.ObjectID, email string) (string, error) {
-	return GenerateJWT(userId, email, []byte(refreshSecret), 15*time.Minute)
+	return GenerateJWT(userId, email, []byte(os.Getenv("RESET_TOKEN")), 15*time.Minute)
 }
 
 func VerifyToken(tokenString string, secret []byte) (*jwt.Token, *Claims, error) {
