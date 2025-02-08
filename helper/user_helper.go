@@ -246,3 +246,13 @@ func UpdateUserRole(userId string, newRole model.Role) (int64, error) {
 
 	return result.ModifiedCount, nil
 }
+
+func CreateUserProfile(newProfile model.Profile) (primitive.ObjectID, error) {
+	result, err := db.ProfileCollection.InsertOne(context.Background(), newProfile)
+	if err != nil {
+		log.Println("Error creating profile", err)
+		return primitive.NilObjectID, err
+	}
+
+	return result.InsertedID.(primitive.ObjectID), nil
+}
