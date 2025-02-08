@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/sarthaksanjay/netflix-go/helper"
 	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/services"
 	"github.com/sarthaksanjay/netflix-go/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -172,6 +174,41 @@ func GetAllUser(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
-// func AddNewProfile(w http.ResponseWriter , r *http.Request){
-//
-// }
+func AddNewProfile(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userId, err := primitive.ObjectIDFromHex(params["id"])
+	if err != nil {
+		utils.SendJSONResponse(w, model.ErrorResponseDTO{Error: "Invalid req body"}, http.StatusBadRequest)
+		return
+	}
+	var req model.CreateProfileDTO
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.SendJSONResponse(w, model.ErrorResponseDTO{Error: "Invalid req body"}, http.StatusBadRequest)
+	}
+
+	defer r.Body.Close()
+
+	newProfile := model.Profile{
+		UserId:    userId,
+		Name:      req.Name,
+		Avatar:    req.Avatar,
+		History:   []model.History{},
+		Watchlist: []model.Watchlist{},
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	insertedId, err := helper.CreateUserProfile(newProfile)
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "error creating user profile"}, http.StatusInternalServerError)
+		return
+	}
+
+	data := map[string]interface{}{
+		"message":    "success",
+		"insertedId": insertedId,
+		"profile":    newProfile,
+	}
+
+	utils.SendJSONResponse(w, data, http.StatusOK)
+}
