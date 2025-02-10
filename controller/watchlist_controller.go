@@ -73,5 +73,18 @@ func DeleteMovieFromWatchlist(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
 
-func DeleteAllMovieFromWatchlist() {
+func DeleteAllMovieFromWatchlist(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	deletedCount, err := helper.DeleteAllMovieFromWatchlist(params["id"])
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error deleting movie from watchlist"}, http.StatusInternalServerError)
+		return
+	}
+
+	data := map[string]interface{}{
+		"message":      "success",
+		"deletedCount": deletedCount,
+	}
+	utils.SendJSONResponse(w, data, http.StatusOK)
 }
