@@ -50,9 +50,10 @@ type Images struct {
 }
 
 type Watchlist struct {
-	ProfileId primitive.ObjectID `json:"profileId,omitempty"`
-	ContentId primitive.ObjectID `json:"contentId,omitempty"`
-	AddedAt   time.Time          `json:"addedAt,omitempty"`
+	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ProfileId primitive.ObjectID `json:"profileId,omitempty" bson:"profileId,omitempty"`
+	ContentId primitive.ObjectID `json:"contentId,omitempty" bson:"contentId,omitempty"`
+	AddedAt   time.Time          `json:"addedAt,omitempty"   bson:"addedAt,omitempty"`
 }
 
 type History struct {
