@@ -108,3 +108,18 @@ func DeleteMovieFromWatchlist(profileId string, movieId string) (bson.M, error) 
 
 	return deletedDoc, nil
 }
+
+func DeleteAllMovieFromWatchlist(profileId string) (int, error) {
+	pID, err := primitive.ObjectIDFromHex(profileId)
+	if err != nil {
+		return 0, err
+	}
+	filter := bson.M{"profileId": pID}
+	result, err := db.WatchlistCollection.DeleteMany(context.Background(), filter)
+	if err != nil {
+		log.Println("Error deleting movies from watchlist")
+		return 0, err
+	}
+
+	return int(result.DeletedCount), nil
+}
