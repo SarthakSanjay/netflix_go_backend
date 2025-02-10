@@ -27,7 +27,6 @@ type User struct {
 	Role             Role               `json:"role,omitempty"`
 	CreatedAt        time.Time          `json:"createdAt,omitempty"`
 	UpdatedAt        time.Time          `json:"updatedAt,omitempty"`
-	Profiles         []Profile          `json:"profiles,omitempty"`
 	Subscription     Subscription       `json:"-"`
 	RefreshTokens    RefreshToken       `json:"refresh_tokens,omitempty" bson:"refresh_tokens,omitempty"`
 	ResetToken       string             `json:"resetToken,omitempty"`
@@ -41,10 +40,13 @@ type RefreshToken struct {
 
 type Profile struct {
 	Id        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserId    primitive.ObjectID `json:"userId,omitempty"`
 	Name      string             `json:"name,omitempty"`
-	Avatar    string             `json:"avtar,omitempty"`
+	Avatar    string             `json:"avatar,omitempty"`
 	Watchlist []Watchlist        `json:"watchlist,omitempty"`
 	History   []History          `json:"history,omitempty"`
+	CreatedAt time.Time          `json:"createdAt,omitempty"`
+	UpdatedAt time.Time          `json:"updatedAt,omitempty"`
 }
 
 func (r Role) IsValid() bool {
