@@ -45,7 +45,7 @@ func GetAllMovieFromUserWatchlist(profileId string) ([]model.Movies, error) {
 		return nil, err
 	}
 
-	filter := bson.M{"profileid": pId}
+	filter := bson.M{"profileId": pId}
 	cursor, err := db.WatchlistCollection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
@@ -56,6 +56,10 @@ func GetAllMovieFromUserWatchlist(profileId string) ([]model.Movies, error) {
 	var watchlistItems []model.Watchlist
 	if err := cursor.All(context.Background(), &watchlistItems); err != nil {
 		return nil, err
+	}
+
+	if len(watchlistItems) == 0 {
+		return []model.Movies{}, nil
 	}
 
 	var movieIDs []primitive.ObjectID
@@ -79,4 +83,28 @@ func GetAllMovieFromUserWatchlist(profileId string) ([]model.Movies, error) {
 	}
 
 	return movies, nil
+}
+
+func DeleteMovieFromWatchlist(profileId string, movieId string) (bson.M, error) {
+	pID, err := primitive.ObjectIDFromHex(profileId)
+	if err != nil {
+		return nil, err
+	}
+	mID, err := primitive.ObjectIDFromHex(movieId)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{
+		"profileId": pID,
+		"contentId": mID,
+	}
+
+	var deletedDoc bson.M
+	err = db.WatchlistCollection.FindOneAndDelete(context.Background(), filter).Decode(&deletedDoc)
+	if err != nil {
+		log.Println("Error deleting movie from watchlist", err)
+		return bson.M{}, err
+	}
+
+	return deletedDoc, nil
 }
