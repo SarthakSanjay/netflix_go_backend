@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/sarthaksanjay/netflix-go/dto"
 	"github.com/sarthaksanjay/netflix-go/helper"
 	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/services"
@@ -178,12 +179,12 @@ func AddNewProfile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userId, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
-		utils.SendJSONResponse(w, model.ErrorResponseDTO{Error: "Invalid req body"}, http.StatusBadRequest)
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Invalid req body"}, http.StatusBadRequest)
 		return
 	}
-	var req model.CreateProfileDTO
+	var req dto.CreateProfileDTO
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.SendJSONResponse(w, model.ErrorResponseDTO{Error: "Invalid req body"}, http.StatusBadRequest)
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Invalid req body"}, http.StatusBadRequest)
 	}
 
 	defer r.Body.Close()
