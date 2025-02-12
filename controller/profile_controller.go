@@ -67,3 +67,45 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
+
+func GetAllUserProfiles(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	profiles, err := helper.GetAllUserProfiles(params["id"])
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error finding profiles with given userId"}, http.StatusNotFound)
+		return
+	}
+
+	data := map[string]interface{}{
+		"message":  "success",
+		"profiles": profiles,
+	}
+
+	utils.SendJSONResponse(w, data, http.StatusOK)
+}
+
+func UpdateUserProfile(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var req model.Profile
+	json.NewDecoder(r.Body).Decode(&req)
+	updateCount, err := helper.UpdateProfile(params["id"], req)
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error updating user profile"}, http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: updateCount}, http.StatusOK)
+}
+
+func DeleteUserProfile(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	deleteCount, err := helper.DeleteProfile(params["id"])
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error deleting user profile"}, http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: deleteCount}, http.StatusOK)
+}
