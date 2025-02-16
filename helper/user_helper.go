@@ -18,17 +18,18 @@ import (
 func CreateUser(user model.User) (string, string, error) { // register
 	var existingUser model.User
 
-	filter := bson.M{
-		"$or": []bson.M{
-			{"username": user.Username},
-			{"email": user.Email},
-		},
-	}
+	filter := bson.M{"email": user.Email}
 
 	err := db.UserCollection.FindOne(context.Background(), filter).Decode(&existingUser)
 	if err != nil && err != mongo.ErrNoDocuments {
 		log.Printf("error finding user: %v\n", err)
 		return "error finding user", "", err
+	}
+
+	log.Println("existingUser", existingUser)
+	if existingUser.Email == user.Email {
+		log.Print("User Alread exists , please login")
+		return "User Already exists , please login", "", errors.New("User Already Exists ,Please Login!")
 	}
 
 	password, err := utils.HashedPassword(user.Password)
@@ -120,6 +121,26 @@ func LoginUser(user model.User) (bool, string, string) {
 		return false, "", ""
 	}
 	return true, accessToken, refreshToken
+}
+
+func LogoutUser(userId string) (int64, error) {
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Println("Invalid userId")
+		return 0, err
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"refresh_tokens": model.RefreshToken{},
+		},
+	}
+	result, err := db.UserCollection.UpdateByID(context.Background(), id, update)
+	if err != nil {
+		log.Println("Error updating refresh_tokens")
+		return 0, err
+	}
+
+	return result.ModifiedCount, nil
 }
 
 func UpdateUser(userId string, updates model.User) (int, error) {
