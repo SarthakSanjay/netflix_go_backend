@@ -28,7 +28,6 @@ type Movies struct {
 	ReleasedOn        int                `json:"releasedOn,omitempty"`
 	Duration          int                `json:"duration,omitempty"`
 	Rating            float64            `json:"rating,omitempty"`
-	Language          []string           `json:"language,omitempty"`
 	Cast              []string           `json:"cast,omitempty"`
 	Director          string             `json:"director,omitempty"`
 	TrailerUrl        string             `json:"trailer,omitempty"`
@@ -43,10 +42,9 @@ type Movies struct {
 }
 
 type Images struct {
-	MovieID      primitive.ObjectID `json:"movieId,omitempty"`
-	ThumbnailUrl string             `json:"thumbnailUrl,omitempty"`
-	Screenshots  []string           `json:"screenshots,omitempty"`
-	Poster       string             `json:"poster,omitempty"`
+	ThumbnailUrl string   `json:"thumbnailUrl,omitempty"`
+	Screenshots  []string `json:"screenshots,omitempty"`
+	Poster       string   `json:"poster,omitempty"`
 }
 
 type Watchlist struct {
