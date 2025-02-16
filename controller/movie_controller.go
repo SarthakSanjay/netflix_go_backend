@@ -191,3 +191,21 @@ func SimilarMovie(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, res, http.StatusOK)
 }
+
+func GetMoviesByGenre(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	movies, err := helper.GetMovieByGenre(params["genre"])
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Movie not found"}, http.StatusInternalServerError)
+		return
+	}
+
+	res := map[string]interface{}{
+		"message": "success",
+		"total":   len(movies),
+		"movies":  movies,
+	}
+
+	utils.SendJSONResponse(w, res, http.StatusOK)
+}
