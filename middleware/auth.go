@@ -7,12 +7,9 @@ import (
 	"os"
 
 	"github.com/sarthaksanjay/netflix-go/services"
+	"github.com/sarthaksanjay/netflix-go/types"
 	"github.com/sarthaksanjay/netflix-go/utils"
 )
-
-type contextKey string
-
-const UserContextKey contextKey = "user"
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +35,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 		// fmt.Println("claims", claims)
 
-		ctx := context.WithValue(r.Context(), UserContextKey, claims)
+		ctx := context.WithValue(r.Context(), types.UserContextKey, claims)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
