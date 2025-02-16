@@ -40,7 +40,7 @@ type RefreshToken struct {
 
 type Profile struct {
 	Id        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId    primitive.ObjectID `json:"userId,omitempty"`
+	UserId    primitive.ObjectID `json:"userId,omitempty" bson:"userId,omitempty"`
 	Name      string             `json:"name,omitempty"`
 	Avatar    string             `json:"avatar,omitempty"`
 	Watchlist []Watchlist        `json:"watchlist,omitempty"`
@@ -51,4 +51,11 @@ type Profile struct {
 
 func (r Role) IsValid() bool {
 	return validRoles[r]
+}
+
+type Favorite struct {
+	Id        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ProfileId primitive.ObjectID `json:"profileId,omitempty" bson:"profileId,omitempty"`
+	ContentId primitive.ObjectID `json:"contentId,omitempty" bson:"contentId,omitempty"`
+	AddedOn   time.Time          `json:"addedOn,omitempty" bson:"addedOn,omitempty"`
 }
