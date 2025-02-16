@@ -21,6 +21,21 @@ func SetTokenCookies(w http.ResponseWriter, name string, token string) {
 	fmt.Println("Access token set in cookie")
 }
 
+func ClearTokenCookies(w http.ResponseWriter, name string) {
+	cookie := &http.Cookie{
+		Name:     name,
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		HttpOnly: true,
+		Secure:   false, // true for https , for local development like http use false
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
+	}
+
+	http.SetCookie(w, cookie)
+	fmt.Println("Access token set in cookie")
+}
+
 func GetTokenFromCookie(name string, r *http.Request) (string, error) {
 	cookie, err := r.Cookie(name)
 	if err != nil {
