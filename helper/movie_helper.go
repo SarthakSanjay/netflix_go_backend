@@ -56,9 +56,9 @@ func UpdateMovie(movieId string, updates model.Movies) (int64, error) {
 		updateFields["rating"] = updates.Rating
 	}
 
-	if len(updates.Language) > 0 {
-		updateFields["language"] = updates.Language
-	}
+	// if len(updates.Language) > 0 {
+	// 	updateFields["language"] = updates.Language
+	// }
 
 	if len(updates.Cast) > 0 {
 		updateFields["cast"] = updates.Cast
@@ -234,6 +234,29 @@ func PopularMovie() ([]model.Movies, error) {
 	filter := bson.M{
 		"rating": bson.M{"$gt": 3},
 	}
+	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
+	if err != nil {
+		log.Printf("No movie found %v\n", err)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var movie model.Movies
+		err := cursor.Decode(&movie)
+		if err != nil {
+			log.Printf("Error decoding movie %v\n", err)
+			continue
+		}
+
+		movies = append(movies, movie)
+	}
+	return movies, nil
+}
+
+func GetMovieByGenre(genre string) ([]model.Movies, error) {
+	var movies []model.Movies
+	filter := bson.M{"genre": genre}
 	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
 	if err != nil {
 		log.Printf("No movie found %v\n", err)
