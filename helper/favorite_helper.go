@@ -72,6 +72,7 @@ func GetUserFavoriteFromProfile(profileId string) ([]model.Favorite, error) {
 		log.Println("Error fetching user favorite")
 		return nil, err
 	}
+	defer cursor.Close(context.Background())
 
 	var favorites []model.Favorite
 	if err := cursor.All(context.Background(), &favorites); err != nil {
