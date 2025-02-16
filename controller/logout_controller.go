@@ -13,7 +13,7 @@ import (
 
 func LogoutUser(w http.ResponseWriter, r *http.Request) {
 	log.Println("hello")
-	id, err := ExtractUserIdFromContext(r.Context())
+	id, err := utils.ExtractUserIdFromContext(r.Context())
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
