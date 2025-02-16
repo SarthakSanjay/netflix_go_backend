@@ -19,6 +19,8 @@ var (
 	MoviesCollection    *mongo.Collection
 	WatchlistCollection *mongo.Collection
 	UserCollection      *mongo.Collection
+	ProfileCollection   *mongo.Collection
+	FavoriteCollection  *mongo.Collection
 	client              *mongo.Client // Store the client to close it later
 )
 
@@ -57,6 +59,8 @@ func ConnectDB() {
 	WatchlistCollection = client.Database(dbName).Collection("watchlist")
 	MoviesCollection = client.Database(dbName).Collection("movies")
 	UserCollection = client.Database(dbName).Collection("user")
+	ProfileCollection = client.Database(dbName).Collection("profile")
+	FavoriteCollection = client.Database(dbName).Collection("favorite")
 
 	fmt.Println("✅ Collection instances are ready!")
 }
