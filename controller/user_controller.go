@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -36,9 +35,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Send success response
 	utils.SendJSONResponse(w, map[string]interface{}{
-		"message":      "success",
-		"accessToken":  accessToken,
-		"refreshToken": refreshToken,
+		"message": "success",
+		// "accessToken":  accessToken,
+		// "refreshToken": refreshToken,
+
 	}, http.StatusOK)
 }
 
@@ -68,7 +68,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	json.NewDecoder(r.Body).Decode(&user)
 
-	fmt.Println("user is ", user)
+	// fmt.Println("user is ", user)
 	count, err := helper.UpdateUser(params["id"], user)
 	if err != nil {
 		utils.SendJSONResponse(w, map[string]string{"error": "unable to update user"}, http.StatusInternalServerError)
