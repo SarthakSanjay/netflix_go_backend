@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/services"
 	"github.com/sarthaksanjay/netflix-go/types"
 	"github.com/sarthaksanjay/netflix-go/utils"
@@ -39,4 +40,27 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
+}
+
+func RequiredRole(requiredRole model.Role) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			claims, ok := r.Context().Value(types.UserContextKey).(*services.Claims)
+			if !ok {
+				utils.SendJSONResponse(w, map[string]string{
+					"error": "invalid context",
+				}, http.StatusUnauthorized)
+				return
+			}
+
+			if claims.Role != requiredRole {
+				utils.SendJSONResponse(w, map[string]string{
+					"error": "insufficient permissions",
+				}, http.StatusForbidden)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }
