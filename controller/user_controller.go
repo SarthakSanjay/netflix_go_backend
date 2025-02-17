@@ -21,7 +21,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	accessToken, refreshToken, err := helper.CreateUser(user)
+	_, _, err := helper.CreateUser(user)
 	if err != nil {
 		utils.SendJSONResponse(w, map[string]interface{}{
 			"error": "user already exist please login",
@@ -29,16 +29,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set auth cookies
-	services.SetTokenCookies(w, "access_token", accessToken)
-	services.SetTokenCookies(w, "refresh_token", refreshToken)
-
-	// Send success response
 	utils.SendJSONResponse(w, map[string]interface{}{
 		"message": "success",
-		// "accessToken":  accessToken,
-		// "refreshToken": refreshToken,
-
 	}, http.StatusOK)
 }
 
