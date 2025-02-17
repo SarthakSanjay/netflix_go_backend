@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sarthaksanjay/netflix-go/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -13,12 +14,14 @@ type Claims struct {
 	jwt.RegisteredClaims
 	Email  string             `json:"email,omitempty"`
 	UserId primitive.ObjectID `json:"userId,omitempty"`
+	Role   model.Role         `json:"model,omitempty"`
 }
 
-func GenerateJWT(userId primitive.ObjectID, email string, secret []byte, expiry time.Duration) (string, error) {
+func GenerateJWT(userId primitive.ObjectID, email string, role model.Role, secret []byte, expiry time.Duration) (string, error) {
 	claims := &Claims{
 		UserId: userId,
 		Email:  email,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expiry)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -36,16 +39,16 @@ func GenerateJWT(userId primitive.ObjectID, email string, secret []byte, expiry 
 	return tokenString, nil
 }
 
-func GenerateAccessToken(userId primitive.ObjectID, email string) (string, error) {
-	return GenerateJWT(userId, email, []byte(os.Getenv("ACCESS_SECRET")), 15*time.Minute)
+func GenerateAccessToken(userId primitive.ObjectID, email string, role model.Role) (string, error) {
+	return GenerateJWT(userId, email, role, []byte(os.Getenv("ACCESS_SECRET")), 15*time.Minute)
 }
 
-func GenerateRefreshToken(userId primitive.ObjectID, email string) (string, error) {
-	return GenerateJWT(userId, email, []byte(os.Getenv("REFRESH_SECRET")), 7*24*time.Hour)
+func GenerateRefreshToken(userId primitive.ObjectID, email string, role model.Role) (string, error) {
+	return GenerateJWT(userId, email, role, []byte(os.Getenv("REFRESH_SECRET")), 7*24*time.Hour)
 }
 
-func GenerateResetToken(userId primitive.ObjectID, email string) (string, error) {
-	return GenerateJWT(userId, email, []byte(os.Getenv("RESET_TOKEN")), 15*time.Minute)
+func GenerateResetToken(userId primitive.ObjectID, email string, role model.Role) (string, error) {
+	return GenerateJWT(userId, email, role, []byte(os.Getenv("RESET_TOKEN")), 15*time.Minute)
 }
 
 func VerifyToken(tokenString string, secret []byte) (*jwt.Token, *Claims, error) {
