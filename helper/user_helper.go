@@ -26,7 +26,7 @@ func CreateUser(user model.User) (string, string, error) { // register
 		return "error finding user", "", err
 	}
 
-	log.Println("existingUser", existingUser)
+	// log.Println("existingUser", existingUser)
 	if existingUser.Email == user.Email {
 		log.Print("User Alread exists , please login")
 		return "User Already exists , please login", "", errors.New("User Already Exists ,Please Login!")
@@ -48,13 +48,13 @@ func CreateUser(user model.User) (string, string, error) { // register
 		return "error creating user", "", err
 	}
 
-	accessToken, err := services.GenerateAccessToken(result.InsertedID.(primitive.ObjectID), user.Email)
+	accessToken, err := services.GenerateAccessToken(result.InsertedID.(primitive.ObjectID), user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generation access token %v\n", err)
 		return "error generating access token", "", err
 	}
 
-	refreshToken, err := services.GenerateRefreshToken(result.InsertedID.(primitive.ObjectID), user.Email)
+	refreshToken, err := services.GenerateRefreshToken(result.InsertedID.(primitive.ObjectID), user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generation access token %v\n", err)
 		return "error generating refresh token", "", err
@@ -94,13 +94,13 @@ func LoginUser(user model.User) (bool, string, string) {
 		return false, "", ""
 	}
 
-	accessToken, err := services.GenerateAccessToken(userF.ID, user.Email)
+	accessToken, err := services.GenerateAccessToken(userF.ID, user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generation access token %v\n", err)
 		return false, "", ""
 	}
 
-	refreshToken, err := services.GenerateRefreshToken(userF.ID, user.Email)
+	refreshToken, err := services.GenerateRefreshToken(userF.ID, user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generation refresh token %v\n", err)
 		return false, "", ""

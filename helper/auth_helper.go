@@ -21,13 +21,13 @@ func RefreshToken(userId primitive.ObjectID) (string, string, error) {
 		return "", "", err
 	}
 
-	accessToken, err := services.GenerateAccessToken(user.ID, user.Email)
+	accessToken, err := services.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generating access token  %v\n", err)
 		return "", "", err
 
 	}
-	refreshToken, err := services.GenerateRefreshToken(user.ID, user.Email)
+	refreshToken, err := services.GenerateRefreshToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generating refresh token  %v\n", err)
 		return "", "", err
