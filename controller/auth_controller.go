@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -11,25 +10,26 @@ import (
 )
 
 func RefreshTokens(w http.ResponseWriter, r *http.Request) {
-	// refreshSecret := os.Getenv("REFRESH_SECRET")
-	rs, _ := r.Cookie("refresh_token")
-	fmt.Println("rs", rs)
+	token, cookieErr := services.GetTokenFromCookie("refresh_token", r)
 
-	token, err := services.GetTokenFromCookie("refresh_token", r)
-	if err != nil {
-		fmt.Println("error", err)
+	tokenFromHeader, headerErr := services.GetTokenFromHeader(r)
+
+	if (cookieErr != nil || token == "") && (tokenFromHeader == "" || headerErr != nil) {
+		// fmt.Println("error", err)
 		utils.SendJSONResponse(w, map[string]string{"error": "cannot retrive refresh_token"}, http.StatusInternalServerError)
 		return
 	}
 
-	_, claims, err := services.VerifyToken(token, []byte(os.Getenv("REFRESH_SECRET")))
+	finalToken := token
+	if finalToken == "" {
+		finalToken = tokenFromHeader
+	}
+
+	_, claims, err := services.VerifyToken(finalToken, []byte(os.Getenv("REFRESH_SECRET")))
 	if err != nil {
 		utils.SendJSONResponse(w, map[string]string{"error": "cannot retrive refresh_token"}, http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println("token", token)
-	fmt.Println("claims", claims)
 
 	accessToken, refreshToken, err := helper.RefreshToken(claims.UserId)
 	if err != nil {
