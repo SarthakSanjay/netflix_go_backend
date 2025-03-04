@@ -21,30 +21,30 @@ func (s Status) String() string {
 
 type Movies struct {
 	ID                primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Name              string             `json:"name,omitempty"`
-	Description       string             `json:"description,omitempty"`
-	Image             Images             `json:"image,omitempty"`
-	Genre             []string           `json:"genre,omitempty"`
-	ReleasedOn        int                `json:"releasedOn,omitempty"`
-	Duration          int                `json:"duration,omitempty"`
-	Rating            float64            `json:"rating,omitempty"`
-	Cast              []string           `json:"cast,omitempty"`
-	Director          string             `json:"director,omitempty"`
-	TrailerUrl        string             `json:"trailer,omitempty"`
-	IsFeatured        bool               `json:"isFeatured,omitempty"`
-	Tags              []string           `json:"tags,omitempty"`
-	Availablity       []string           `json:"availablity,omitempty"`
-	AgeRating         string             `json:"ageRating,omitempty"`
-	Views             int64              `json:"views,omitempty"`
-	AudioLanguages    []string           `json:"audioLanguages,omitempty"`
-	SubtitleLanguages []string           `json:"subtitleLanguages,omitempty"`
-	AddedDate         time.Time          `json:"addedOn,omitempty"`
+	Name              string             `json:"name,omitempty" bson:"name,omitempty"`
+	Description       string             `json:"description,omitempty" bson:"description,omitempty"`
+	Image             Images             `json:"image,omitempty" bson:"image,omitempty"`
+	Genre             []string           `json:"genre,omitempty" bson:"genre,omitempty"`
+	ReleasedOn        int                `json:"releasedOn,omitempty" bson:"releasedOn,omitempty"`
+	Duration          int                `json:"duration,omitempty" bson:"duration,omitempty"`
+	Rating            float64            `json:"rating,omitempty" bson:"rating,omitempty"`
+	Cast              []string           `json:"cast,omitempty" bson:"cast,omitempty"`
+	Director          string             `json:"director,omitempty" bson:"director,omitempty"`
+	TrailerUrl        string             `json:"trailerUrl,omitempty" bson:"trailerUrl,omitempty"`
+	IsFeatured        bool               `json:"isFeatured,omitempty" bson:"isFeatured,omitempty"`
+	Tags              []string           `json:"tags,omitempty" bson:"tags,omitempty"`
+	Availability      []string           `json:"availability,omitempty" bson:"availability,omitempty"`
+	AgeRating         string             `json:"ageRating,omitempty" bson:"ageRating,omitempty"`
+	Views             int64              `json:"views,omitempty" bson:"views,omitempty"`
+	AudioLanguages    []string           `json:"audioLanguages,omitempty" bson:"audioLanguages,omitempty"`
+	SubtitleLanguages []string           `json:"subtitleLanguages,omitempty" bson:"subtitleLanguages,omitempty"`
+	AddedDate         time.Time          `json:"addedDate,omitempty" bson:"addedDate,omitempty"`
 }
 
 type Images struct {
-	ThumbnailUrl string   `json:"thumbnailUrl,omitempty"`
-	Screenshots  []string `json:"screenshots,omitempty"`
-	Poster       string   `json:"poster,omitempty"`
+	ThumbnailUrl string   `json:"thumbnailUrl,omitempty" bson:"thumbnailUrl,omitempty"`
+	Screenshots  []string `json:"screenshots,omitempty" bson:"screenshots,omitempty"`
+	Poster       string   `json:"poster,omitempty" bson:"poster,omitempty"`
 }
 
 type Watchlist struct {
