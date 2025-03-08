@@ -28,7 +28,7 @@ type Movies struct {
 	ReleasedOn        int                `json:"releasedOn,omitempty" bson:"releasedOn,omitempty"`
 	Duration          int                `json:"duration,omitempty" bson:"duration,omitempty"`
 	Rating            float64            `json:"rating,omitempty" bson:"rating,omitempty"`
-	Cast              []string           `json:"cast,omitempty" bson:"cast,omitempty"`
+	Cast              []Cast             `json:"cast,omitempty" bson:"cast,omitempty"`
 	Director          string             `json:"director,omitempty" bson:"director,omitempty"`
 	TrailerUrl        string             `json:"trailerUrl,omitempty" bson:"trailerUrl,omitempty"`
 	IsFeatured        bool               `json:"isFeatured,omitempty" bson:"isFeatured,omitempty"`
@@ -42,9 +42,10 @@ type Movies struct {
 }
 
 type Images struct {
-	ThumbnailUrl string   `json:"thumbnailUrl,omitempty" bson:"thumbnailUrl,omitempty"`
-	Screenshots  []string `json:"screenshots,omitempty" bson:"screenshots,omitempty"`
-	Poster       string   `json:"poster,omitempty" bson:"poster,omitempty"`
+	Thumbnail   string   `json:"thumbnail,omitempty" bson:"thumbnail,omitempty"`
+	Screenshots []string `json:"screenshots,omitempty" bson:"screenshots,omitempty"`
+	Poster      string   `json:"poster,omitempty" bson:"poster,omitempty"`
+	Title       string   `json:"title,omitempty" bson:"title,omitempty"`
 }
 
 type Watchlist struct {
