@@ -9,6 +9,7 @@ import (
 	"github.com/sarthaksanjay/netflix-go/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func GetAllMovie(ctx context.Context) ([]model.Movies, error) {
@@ -99,7 +100,7 @@ func SearchMovie(searchQuery string) ([]model.Movies, error) {
 func PopularMovie() ([]model.Movies, error) {
 	var movies []model.Movies
 	filter := bson.M{
-		"rating": bson.M{"$gt": 3},
+		"rating": bson.M{"$gt": 8},
 	}
 	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
 	if err != nil {
@@ -121,10 +122,10 @@ func PopularMovie() ([]model.Movies, error) {
 	return movies, nil
 }
 
-func GetMovieByGenre(genre string) ([]model.Movies, error) {
+func GetMovieByGenre(genre string, limit int) ([]model.Movies, error) {
 	var movies []model.Movies
 	filter := bson.M{"genre": genre}
-	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
+	cursor, err := db.MoviesCollection.Find(context.Background(), filter, options.Find().SetLimit(int64(limit)))
 	if err != nil {
 		log.Printf("No movie found %v\n", err)
 		return nil, err
@@ -169,5 +170,30 @@ func SimilarMovie(genres []string) ([]model.Movies, error) {
 		}
 		movies = append(movies, movie)
 	}
+	return movies, nil
+}
+
+func TrendingMovie() ([]model.Movies, error) {
+	var movies []model.Movies
+	filter := bson.M{
+		"isFeatured": true,
+	}
+
+	cursor, err := db.MoviesCollection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var movie model.Movies
+		err := cursor.Decode(&movie)
+		if err != nil {
+			log.Println("Error decoding movie")
+			continue
+		}
+		movies = append(movies, movie)
+	}
+	log.Println("trending movies", movies)
 	return movies, nil
 }

@@ -54,11 +54,10 @@ func GetUserWatchlist(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteMovieFromWatchlist(w http.ResponseWriter, r *http.Request) {
-	var req dto.AddMovieDTO
-	json.NewDecoder(r.Body).Decode(&req)
+	params := mux.Vars(r)
 
-	profileId := req.ProfileId.Hex()
-	movieId := req.ContentId.Hex()
+	profileId := params["profileId"]
+	movieId := params["contentId"]
 
 	deletedDoc, err := helper.DeleteMovieFromWatchlist(profileId, movieId)
 	if err != nil {

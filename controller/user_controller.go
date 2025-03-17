@@ -38,7 +38,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	json.NewDecoder(r.Body).Decode(&user)
 
-	isLoggedIn, accessToken, refreshToken := helper.LoginUser(user)
+	isLoggedIn, accessToken, refreshToken, userF := helper.LoginUser(user)
 
 	if !isLoggedIn {
 		utils.SendJSONResponse(w, map[string]string{"error": "login failed"}, http.StatusInternalServerError)
@@ -51,6 +51,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		"message":      "success",
 		"accessToken":  accessToken,
 		"refreshToken": refreshToken,
+		"user":         userF,
 	}
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }

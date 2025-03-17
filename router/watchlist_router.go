@@ -11,6 +11,6 @@ func WatchlistRoutes(protectedRoutes *mux.Router) {
 	// protectedRoutes.HandleFunc("/api/watchlist/{id}", .GetUserWatchlist())
 	protectedRoutes.HandleFunc("/watchlist", controller.AddMovieToWatchlist).Methods("POST")
 	protectedRoutes.HandleFunc("/watchlist/{id}", controller.GetUserWatchlist).Methods("GET")
-	protectedRoutes.HandleFunc("/watchlist", controller.DeleteMovieFromWatchlist).Methods("DELETE")
+	protectedRoutes.HandleFunc("/watchlist/{profileId}/{contentId}", controller.DeleteMovieFromWatchlist).Methods("DELETE")
 	protectedRoutes.HandleFunc("/watchlist/all/{id}", controller.DeleteAllMovieFromWatchlist).Methods("DELETE")
 }

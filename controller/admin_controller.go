@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/sarthaksanjay/netflix-go/dto"
 	"github.com/sarthaksanjay/netflix-go/helper"
 	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/utils"
@@ -78,7 +79,10 @@ func GetMovieById(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	json.NewEncoder(w).Encode(movie)
+	utils.SendJSONResponse(w, dto.MovieSuccessResponse{
+		Message: "success",
+		Movie:   *movie,
+	}, http.StatusOK)
 }
 
 func UpdateMovie(w http.ResponseWriter, r *http.Request) {

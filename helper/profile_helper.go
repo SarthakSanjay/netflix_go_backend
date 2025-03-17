@@ -66,6 +66,7 @@ func UpdateProfile(profileId string, updates model.Profile) (int, error) {
 		log.Println("Invalid ProfileId")
 		return 0, err
 	}
+	log.Println("✅updates✅", updates)
 	newProfile := bson.M{}
 	if updates.Name != "" {
 		newProfile["name"] = updates.Name

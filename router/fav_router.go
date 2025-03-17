@@ -6,7 +6,7 @@ import (
 )
 
 func FavRoutes(protectedRoutes *mux.Router) {
-	protectedRoutes.HandleFunc("/api/favorite", controller.AddContentToFavorite).Methods("POST")
-	protectedRoutes.HandleFunc("/api/favorite", controller.RemoveContentFromFavorite).Methods("DELETE")
-	protectedRoutes.HandleFunc("/api/favorites/{id}", controller.GetAllContentFromUsersProfileFavorite).Methods("GET")
+	protectedRoutes.HandleFunc("/favorite", controller.AddContentToFavorite).Methods("POST")
+	protectedRoutes.HandleFunc("/favorite/{profileId}/{contentId}", controller.RemoveContentFromFavorite).Methods("DELETE")
+	protectedRoutes.HandleFunc("/favorites/{id}", controller.GetAllContentFromUsersProfileFavorite).Methods("GET")
 }

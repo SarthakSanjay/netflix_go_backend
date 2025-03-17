@@ -14,6 +14,7 @@ import (
 )
 
 func InsertMovie(movie model.Movies) (primitive.ObjectID, error) {
+	movie.AddedDate = time.Now()
 	inserted, err := db.MoviesCollection.InsertOne(context.Background(), movie)
 	if err != nil {
 		log.Printf("Error inserting movie : %v\n", err)
@@ -76,8 +77,8 @@ func UpdateMovie(movieId string, updates model.Movies) (int64, error) {
 		updateFields["tags"] = updates.Tags
 	}
 
-	if len(updates.Availablity) > 0 {
-		updateFields["availablity"] = updates.Availablity
+	if len(updates.Availability) > 0 {
+		updateFields["availablity"] = updates.Availability
 	}
 
 	if updates.AgeRating != "" {

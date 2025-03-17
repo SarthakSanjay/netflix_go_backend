@@ -27,11 +27,9 @@ func AddContentToFavorite(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveContentFromFavorite(w http.ResponseWriter, r *http.Request) {
-	var req dto.FavoriteRequestDto
-	json.NewDecoder(r.Body).Decode(&req)
-
-	profileId := req.ProfileId.Hex()
-	contentId := req.ContentId.Hex()
+	params := mux.Vars(r)
+	profileId := params["profileId"]
+	contentId := params["contentId"]
 
 	result, err := helper.RemoveFromFavorite(profileId, contentId)
 	if err != nil {

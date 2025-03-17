@@ -8,8 +8,6 @@ import (
 func AuthRoutes(router *mux.Router) {
 	router.HandleFunc("/api/user", controller.CreateUser).Methods("POST")
 	router.HandleFunc("/api/user/login", controller.LoginUser).Methods("POST")
-	// user routes
-
 	router.HandleFunc("/api/refresh", controller.RefreshTokens).Methods("POST")
 }
 
@@ -24,10 +22,9 @@ func UserRoutes(protectedRoutes *mux.Router) {
 }
 
 func UserProfileRoutes(protectedRoutes *mux.Router) {
-	//
-	protectedRoutes.HandleFunc("/api/profile/{id}", controller.AddNewProfile).Methods("POST")
-	protectedRoutes.HandleFunc("/api/profile/{id}", controller.GetUserProfile).Methods("GET")
-	protectedRoutes.HandleFunc("/api/user/profiles/{id}", controller.GetAllUserProfiles).Methods("GET")
-	protectedRoutes.HandleFunc("/api/profile/{id}", controller.UpdateUserProfile).Methods("PUT")
-	protectedRoutes.HandleFunc("/api/profile/{id}", controller.DeleteUserProfile).Methods("DELETE")
+	protectedRoutes.HandleFunc("/profile/{id}", controller.AddNewProfile).Methods("POST")
+	protectedRoutes.HandleFunc("/profile/{id}", controller.GetUserProfile).Methods("GET")
+	protectedRoutes.HandleFunc("/user/profiles/{id}", controller.GetAllUserProfiles).Methods("GET")
+	protectedRoutes.HandleFunc("/profile/{id}", controller.UpdateUserProfile).Methods("PUT")
+	protectedRoutes.HandleFunc("/profile/{id}", controller.DeleteUserProfile).Methods("DELETE")
 }

@@ -23,7 +23,7 @@ func main() {
 	defer db.DisconnectDB()
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"}, // todo:in production use actual clien url
+		AllowedOrigins:   []string{"http://localhost:3000", "exp://k9uijqi-sharko_dev-8081.exp.direct"}, // todo:in production use actual clien url
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true, // Allow cookies and credentials

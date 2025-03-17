@@ -80,30 +80,30 @@ func CreateUser(user model.User) (string, string, error) { // register
 }
 
 // login
-func LoginUser(user model.User) (bool, string, string) {
+func LoginUser(user model.User) (bool, string, string, model.User) {
 	filter := bson.M{"email": user.Email}
 	var userF model.User
 	err := db.UserCollection.FindOne(context.Background(), filter).Decode(&userF)
 	if err != nil {
 		log.Printf("Invalid email or password%v\n", err)
-		return false, "", ""
+		return false, "", "", model.User{}
 	}
 	hashedPassword := userF.Password
 	if !utils.ComparePassword(hashedPassword, user.Password) {
 		log.Printf("Incorrect password ")
-		return false, "", ""
+		return false, "", "", model.User{}
 	}
 
 	accessToken, err := services.GenerateAccessToken(userF.ID, user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generation access token %v\n", err)
-		return false, "", ""
+		return false, "", "", model.User{}
 	}
 
 	refreshToken, err := services.GenerateRefreshToken(userF.ID, user.Email, user.Role)
 	if err != nil {
 		log.Printf("Error generation refresh token %v\n", err)
-		return false, "", ""
+		return false, "", "", model.User{}
 	}
 
 	update := bson.M{
@@ -118,9 +118,9 @@ func LoginUser(user model.User) (bool, string, string) {
 	_, err = db.UserCollection.UpdateOne(context.Background(), bson.M{"_id": userF.ID}, update)
 	if err != nil {
 		log.Printf("Error updating refresh token %v\n", err)
-		return false, "", ""
+		return false, "", "", model.User{}
 	}
-	return true, accessToken, refreshToken
+	return true, accessToken, refreshToken, userF
 }
 
 func LogoutUser(userId string) (int64, error) {
@@ -207,6 +207,7 @@ func DeleteAllUser() (int64, error) {
 func GetUser(userId string) (model.User, error) {
 	id, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
+		log.Println("id", id)
 		log.Printf("Invalid user id %v\n", err)
 		return model.User{}, err
 	}

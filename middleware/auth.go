@@ -14,13 +14,21 @@ import (
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString, err := services.GetTokenFromCookie("access_token", r)
-		if err != nil || tokenString == "" {
-			utils.SendJSONResponse(w, map[string]string{"message": "access token is missing please login"}, http.StatusUnauthorized)
+		tokenString, cookieErr := services.GetTokenFromCookie("access_token", r)
+
+		tokenStringFromHeader, headerErr := services.GetTokenFromHeader(r)
+
+		if (cookieErr != nil || tokenString == "") && (headerErr != nil || tokenStringFromHeader == "") {
+			utils.SendJSONResponse(w, map[string]string{"message": "access token is missing, please login"}, http.StatusUnauthorized)
 			return
 		}
 
-		token, claims, err := services.VerifyToken(tokenString, []byte(os.Getenv("ACCESS_SECRET")))
+		finalToken := tokenString
+		if finalToken == "" {
+			finalToken = tokenStringFromHeader
+		}
+
+		token, claims, err := services.VerifyToken(finalToken, []byte(os.Getenv("ACCESS_SECRET")))
 		if err != nil {
 			fmt.Println("error in auth", err)
 			utils.SendJSONResponse(w, map[string]interface{}{

@@ -18,7 +18,7 @@ func GetAllMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSONResponse(w, dto.MovieSuccessResponse{
+	utils.SendJSONResponse(w, dto.MoviesSuccessResponse{
 		Message: "success",
 		Movies:  movies,
 		Total:   len(movies),
@@ -39,7 +39,7 @@ func SearchMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSONResponse(w, dto.MovieSuccessResponse{
+	utils.SendJSONResponse(w, dto.MoviesSuccessResponse{
 		Message: "success",
 		Movies:  movies,
 		Total:   len(movies),
@@ -54,7 +54,7 @@ func PopularMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSONResponse(w, dto.MovieSuccessResponse{
+	utils.SendJSONResponse(w, dto.MoviesSuccessResponse{
 		Message: "success",
 		Movies:  movies,
 		Total:   len(movies),
@@ -81,7 +81,7 @@ func SimilarMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSONResponse(w, dto.MovieSuccessResponse{
+	utils.SendJSONResponse(w, dto.MoviesSuccessResponse{
 		Message: "success",
 		Movies:  similarMovie,
 		Total:   len(similarMovie),
@@ -106,7 +106,7 @@ func GetMoviesByGenre(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSONResponse(w, dto.MovieSuccessResponse{
+	utils.SendJSONResponse(w, dto.MoviesSuccessResponse{
 		Message: "success",
 		Movies:  movies,
 		Total:   len(movies),
@@ -122,7 +122,7 @@ func GetTrendingMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSONResponse(w, dto.MovieSuccessResponse{
+	utils.SendJSONResponse(w, dto.MoviesSuccessResponse{
 		Message: "success",
 		Movies:  movies,
 		Total:   len(movies),

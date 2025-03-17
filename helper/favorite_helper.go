@@ -58,31 +58,49 @@ func RemoveFromFavorite(profileId string, contentId string) (int64, error) {
 	return result.DeletedCount, nil
 }
 
-func GetUserFavoriteFromProfile(profileId string) ([]model.Favorite, error) {
+func GetUserFavoriteFromProfile(profileId string) ([]model.Movies, error) {
 	pId, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
+		log.Printf("Invalid profileId: %v\n", err)
 		return nil, err
 	}
 
-	filter := bson.M{
-		"profileId": pId,
-	}
+	filter := bson.M{"profileId": pId}
 	cursor, err := db.FavoriteCollection.Find(context.Background(), filter)
 	if err != nil {
-		log.Println("Error fetching user favorite")
 		return nil, err
 	}
+
 	defer cursor.Close(context.Background())
 
-	var favorites []model.Favorite
-	if err := cursor.All(context.Background(), &favorites); err != nil {
-		log.Println("Error decoding user favorites")
+	var favoriteItems []model.Favorite
+	if err := cursor.All(context.Background(), &favoriteItems); err != nil {
 		return nil, err
 	}
 
-	if len(favorites) == 0 {
-		return []model.Favorite{}, nil
+	if len(favoriteItems) == 0 {
+		return []model.Movies{}, nil
 	}
 
-	return favorites, nil
+	var movieIDs []primitive.ObjectID
+	for _, item := range favoriteItems {
+		movieIDs = append(movieIDs, item.ContentId)
+	}
+
+	movieFilter := bson.M{
+		"_id": bson.M{"$in": movieIDs},
+	}
+	movieCursor, err := db.MoviesCollection.Find(context.Background(), movieFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer movieCursor.Close(context.Background())
+
+	var movies []model.Movies
+	if err := movieCursor.All(context.Background(), &movies); err != nil {
+		return nil, nil
+	}
+
+	return movies, nil
 }

@@ -62,7 +62,7 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]interface{}{
 		"message": "success",
-		"result":  result,
+		"profile": result,
 	}
 
 	utils.SendJSONResponse(w, data, http.StatusOK)

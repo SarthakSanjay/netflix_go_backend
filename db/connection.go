@@ -33,7 +33,7 @@ func ConnectDB() {
 	}
 
 	// Get MongoDB connection string
-	dbURI := os.Getenv("DB_CONNECTION_STRING")
+	dbURI := os.Getenv("DB_CONNECTION_STRING_DOCKER")
 	if dbURI == "" {
 		log.Fatal("DB_CONNECTION_STRING is not set in .env")
 	}
