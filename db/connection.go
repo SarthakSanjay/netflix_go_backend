@@ -17,6 +17,7 @@ const (
 
 var (
 	MoviesCollection    *mongo.Collection
+	ShowsCollection     *mongo.Collection
 	WatchlistCollection *mongo.Collection
 	UserCollection      *mongo.Collection
 	ProfileCollection   *mongo.Collection
@@ -58,6 +59,7 @@ func ConnectDB() {
 	// Assign collections
 	WatchlistCollection = client.Database(dbName).Collection("watchlist")
 	MoviesCollection = client.Database(dbName).Collection("movies")
+	ShowsCollection = client.Database(dbName).Collection("shows")
 	UserCollection = client.Database(dbName).Collection("user")
 	ProfileCollection = client.Database(dbName).Collection("profile")
 	FavoriteCollection = client.Database(dbName).Collection("favorite")
