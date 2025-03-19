@@ -15,17 +15,17 @@ type Show struct {
 	ReleasedOn        int                `json:"releasedOn,omitempty" bson:"releasedOn,omitempty"`
 	Rating            float64            `json:"rating,omitempty" bson:"rating,omitempty"`
 	Cast              []Cast             `json:"cast,omitempty" bson:"cast,omitempty"`
-	Seasons           []Season
-	Director          string    `json:"director,omitempty" bson:"director,omitempty"`
-	TrailerUrl        string    `json:"trailerUrl,omitempty" bson:"trailerUrl,omitempty"`
-	IsFeatured        bool      `json:"isFeatured,omitempty" bson:"isFeatured,omitempty"`
-	Tags              []string  `json:"tags,omitempty" bson:"tags,omitempty"`
-	Availability      []string  `json:"availability,omitempty" bson:"availability,omitempty"`
-	AgeRating         string    `json:"ageRating,omitempty" bson:"ageRating,omitempty"`
-	Views             int64     `json:"views,omitempty" bson:"views,omitempty"`
-	AudioLanguages    []string  `json:"audioLanguages,omitempty" bson:"audioLanguages,omitempty"`
-	SubtitleLanguages []string  `json:"subtitleLanguages,omitempty" bson:"subtitleLanguages,omitempty"`
-	AddedDate         time.Time `json:"addedDate,omitempty" bson:"addedDate,omitempty"`
+	Seasons           []Season           `json:"seasons,omitempty" bson:"seasons,omitempty"`
+	Director          string             `json:"director,omitempty" bson:"director,omitempty"`
+	TrailerUrl        string             `json:"trailerUrl,omitempty" bson:"trailerUrl,omitempty"`
+	IsFeatured        bool               `json:"isFeatured,omitempty" bson:"isFeatured,omitempty"`
+	Tags              []string           `json:"tags,omitempty" bson:"tags,omitempty"`
+	Availability      []string           `json:"availability,omitempty" bson:"availability,omitempty"`
+	AgeRating         string             `json:"ageRating,omitempty" bson:"ageRating,omitempty"`
+	Views             int64              `json:"views,omitempty" bson:"views,omitempty"`
+	AudioLanguages    []string           `json:"audioLanguages,omitempty" bson:"audioLanguages,omitempty"`
+	SubtitleLanguages []string           `json:"subtitleLanguages,omitempty" bson:"subtitleLanguages,omitempty"`
+	AddedDate         time.Time          `json:"addedDate,omitempty" bson:"addedDate,omitempty"`
 }
 
 type Season struct {
