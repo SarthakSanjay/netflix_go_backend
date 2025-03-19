@@ -17,3 +17,14 @@ type MoviesSuccessResponse struct {
 	Movies  []model.Movies `json:"movies"`
 	Total   int            `json:"total"`
 }
+
+type ShowSuccessResponse struct {
+	Message string     `json:"message"`
+	Show    model.Show `json:"show"`
+}
+
+type ShowsSuccessResponse struct {
+	Message string       `json:"message"`
+	Shows   []model.Show `json:"shows"`
+	Total   int          `json:"total"`
+}
