@@ -144,3 +144,14 @@ func DeleteAllMovie() (int64, error) {
 	fmt.Println("Deleted all movies")
 	return movie.DeletedCount, nil
 }
+
+func InsertShow(show model.Show) (primitive.ObjectID, error) {
+	show.AddedDate = time.Now()
+	inserted, err := db.ShowsCollection.InsertOne(context.Background(), show)
+	if err != nil {
+		log.Printf("Error inserting show : %v\n", err)
+	}
+
+	fmt.Println("Inserted 1 show in the db with id :", inserted.InsertedID)
+	return inserted.InsertedID.(primitive.ObjectID), nil
+}
