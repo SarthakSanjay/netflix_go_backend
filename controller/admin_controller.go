@@ -113,3 +113,25 @@ func UpdateMovie(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
+
+func CreateShow(w http.ResponseWriter, r *http.Request) {
+	var show model.Show
+
+	err := json.NewDecoder(r.Body).Decode(&show)
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Invalid request body"}, http.StatusBadRequest)
+		return
+	}
+
+	id, err := helper.InsertShow(show)
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "failed to insert show"}, http.StatusInternalServerError)
+		return
+	}
+	respose := map[string]interface{}{
+		"message":        "success",
+		"insertedShowId": id.Hex(),
+		"show":           &show,
+	}
+	utils.SendJSONResponse(w, respose, http.StatusCreated)
+}
