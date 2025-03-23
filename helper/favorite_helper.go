@@ -36,7 +36,7 @@ func AddContentToFavorite(profileId string, contentId string, contentType string
 	return result.InsertedID.(primitive.ObjectID), nil
 }
 
-func RemoveMovieFromFavorite(profileId string, contentId string) (int64, error) {
+func RemoveContentFromFavorite(profileId string, contentId string, contentType string) (int64, error) {
 	pId, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
 		return 0, err
@@ -47,8 +47,9 @@ func RemoveMovieFromFavorite(profileId string, contentId string) (int64, error) 
 	}
 
 	filter := bson.M{
-		"profileId": pId,
-		"contentId": cId,
+		"profileId":   pId,
+		"contentId":   cId,
+		"contentType": contentType,
 	}
 	result, err := db.FavoriteCollection.DeleteOne(context.Background(), filter)
 	if err != nil {
