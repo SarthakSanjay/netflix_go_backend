@@ -54,8 +54,9 @@ func (r Role) IsValid() bool {
 }
 
 type Favorite struct {
-	Id        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ProfileId primitive.ObjectID `json:"profileId,omitempty" bson:"profileId,omitempty"`
-	ContentId primitive.ObjectID `json:"contentId,omitempty" bson:"contentId,omitempty"`
-	AddedOn   time.Time          `json:"addedOn,omitempty" bson:"addedOn,omitempty"`
+	Id          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ProfileId   primitive.ObjectID `json:"profileId,omitempty" bson:"profileId,omitempty"`
+	ContentId   primitive.ObjectID `json:"contentId,omitempty" bson:"contentId,omitempty"`
+	ContentType string             `json:"contentType,omitempty" bson:"contentType,omitempty"`
+	AddedOn     time.Time          `json:"addedOn,omitempty" bson:"addedOn,omitempty"`
 }
