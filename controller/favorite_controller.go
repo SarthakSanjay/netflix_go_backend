@@ -31,7 +31,7 @@ func RemoveMovieFromFavorite(w http.ResponseWriter, r *http.Request) {
 	profileId := params["profileId"]
 	contentId := params["contentId"]
 
-	result, err := helper.RemoveMovieFromFavorite(profileId, contentId)
+	result, err := helper.RemoveContentFromFavorite(profileId, contentId, "movie")
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error removing content from favorite"}, http.StatusInternalServerError)
 		return
@@ -61,6 +61,20 @@ func AddShowToFavorite(w http.ResponseWriter, r *http.Request) {
 	result, err := helper.AddContentToFavorite(profileId, contentId, "show")
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error adding content to favorites"}, http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: result}, http.StatusOK)
+}
+
+func RemoveShowFromFavorite(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	profileId := params["profileId"]
+	contentId := params["contentId"]
+
+	result, err := helper.RemoveContentFromFavorite(profileId, contentId, "show")
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error removing content from favorite"}, http.StatusInternalServerError)
 		return
 	}
 
