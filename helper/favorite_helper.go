@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func AddToFavorite(profileId string, contentId string) (primitive.ObjectID, error) {
+func AddContentToFavorite(profileId string, contentId string, contentType string) (primitive.ObjectID, error) {
 	pId, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
 		return primitive.NilObjectID, err
@@ -22,9 +22,10 @@ func AddToFavorite(profileId string, contentId string) (primitive.ObjectID, erro
 	}
 
 	doc := model.Favorite{
-		ProfileId: pId,
-		ContentId: cId,
-		AddedOn:   time.Now(),
+		ProfileId:   pId,
+		ContentId:   cId,
+		ContentType: contentType,
+		AddedOn:     time.Now(),
 	}
 	result, err := db.FavoriteCollection.InsertOne(context.Background(), doc)
 	if err != nil {
@@ -35,7 +36,7 @@ func AddToFavorite(profileId string, contentId string) (primitive.ObjectID, erro
 	return result.InsertedID.(primitive.ObjectID), nil
 }
 
-func RemoveFromFavorite(profileId string, contentId string) (int64, error) {
+func RemoveMovieFromFavorite(profileId string, contentId string) (int64, error) {
 	pId, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
 		return 0, err
@@ -58,7 +59,7 @@ func RemoveFromFavorite(profileId string, contentId string) (int64, error) {
 	return result.DeletedCount, nil
 }
 
-func GetUserFavoriteFromProfile(profileId string) ([]model.Movies, error) {
+func GetUserFavoriteMoviesFromProfile(profileId string) ([]model.Movies, error) {
 	pId, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
 		log.Printf("Invalid profileId: %v\n", err)
