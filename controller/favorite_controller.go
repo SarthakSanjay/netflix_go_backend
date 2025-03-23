@@ -10,14 +10,14 @@ import (
 	"github.com/sarthaksanjay/netflix-go/utils"
 )
 
-func AddContentToFavorite(w http.ResponseWriter, r *http.Request) {
+func AddMovieToFavorite(w http.ResponseWriter, r *http.Request) {
 	var req dto.FavoriteRequestDto
 	json.NewDecoder(r.Body).Decode(&req)
 
 	profileId := req.ProfileId.Hex()
 	contentId := req.ContentId.Hex()
 
-	result, err := helper.AddToFavorite(profileId, contentId)
+	result, err := helper.AddContentToFavorite(profileId, contentId, "movie")
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error adding content to favorites"}, http.StatusInternalServerError)
 		return
@@ -26,12 +26,12 @@ func AddContentToFavorite(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: result}, http.StatusOK)
 }
 
-func RemoveContentFromFavorite(w http.ResponseWriter, r *http.Request) {
+func RemoveMovieFromFavorite(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	profileId := params["profileId"]
 	contentId := params["contentId"]
 
-	result, err := helper.RemoveFromFavorite(profileId, contentId)
+	result, err := helper.RemoveMovieFromFavorite(profileId, contentId)
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error removing content from favorite"}, http.StatusInternalServerError)
 		return
@@ -40,13 +40,29 @@ func RemoveContentFromFavorite(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: result}, http.StatusOK)
 }
 
-func GetAllContentFromUsersProfileFavorite(w http.ResponseWriter, r *http.Request) {
+func GetAllMoviesFromUsersProfileFavorite(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	favorites, err := helper.GetUserFavoriteFromProfile(params["id"])
+	favorites, err := helper.GetUserFavoriteMoviesFromProfile(params["id"])
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error finding users favorite"}, http.StatusInternalServerError)
 	}
 
 	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: favorites}, http.StatusOK)
+}
+
+func AddShowToFavorite(w http.ResponseWriter, r *http.Request) {
+	var req dto.FavoriteRequestDto
+	json.NewDecoder(r.Body).Decode(&req)
+
+	profileId := req.ProfileId.Hex()
+	contentId := req.ContentId.Hex()
+
+	result, err := helper.AddContentToFavorite(profileId, contentId, "show")
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error adding content to favorites"}, http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: result}, http.StatusOK)
 }
