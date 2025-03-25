@@ -30,14 +30,17 @@ type Show struct {
 
 type Season struct {
 	ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	number   int8               `json:"number,omitempty" bson:"number,omitempty"`
-	episodes []Episode          `json:"episodes,omitempty" bson:"episodes,omitempty"`
+	ShowId   primitive.ObjectID `json:"showId,omitempty" bson:"showId,omitempty"`
+	Number   int8               `json:"number,omitempty" bson:"number,omitempty"`
+	Episodes []Episode          `json:"episodes,omitempty" bson:"episodes,omitempty"`
 }
 
 type Episode struct {
 	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	thumbnail   string             `json:"thumbnail,omitempty" bson:"thumbnail,omitempty"`
-	title       string             `json:"title,omitempty" bson:"title,omitempty"`
-	description string             `json:"description,omitempty" bson:"description,omitempty"`
+	ShowId      primitive.ObjectID `json:"showId,omitempty" bson:"showId,omitempty"`
+	SeasonId    primitive.ObjectID `json:"seasonId,omitempty" bson:"seasonId,omitempty"`
+	Thumbnail   string             `json:"thumbnail,omitempty" bson:"thumbnail,omitempty"`
+	Title       string             `json:"title,omitempty" bson:"title,omitempty"`
+	Description string             `json:"description,omitempty" bson:"description,omitempty"`
 	Duration    int                `json:"duration,omitempty" bson:"duration,omitempty"`
 }
