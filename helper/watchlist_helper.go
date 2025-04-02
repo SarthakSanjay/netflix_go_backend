@@ -89,12 +89,12 @@ func GetAllContentFromUserWatchlist(profileId string, contentType string) (inter
 	return movies, nil
 }
 
-func DeleteMovieFromWatchlist(profileId string, movieId string) (bson.M, error) {
+func DeleteContentFromWatchlist(profileId string, contentId string) (bson.M, error) {
 	pID, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
 		return nil, err
 	}
-	mID, err := primitive.ObjectIDFromHex(movieId)
+	mID, err := primitive.ObjectIDFromHex(contentId)
 	if err != nil {
 		return nil, err
 	}
@@ -113,15 +113,15 @@ func DeleteMovieFromWatchlist(profileId string, movieId string) (bson.M, error) 
 	return deletedDoc, nil
 }
 
-func DeleteAllMovieFromWatchlist(profileId string) (int, error) {
+func DeleteAllContentFromWatchlist(profileId string, contentType string) (int, error) {
 	pID, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
 		return 0, err
 	}
-	filter := bson.M{"profileId": pID}
+	filter := bson.M{"profileId": pID, "contentType": contentType}
 	result, err := db.WatchlistCollection.DeleteMany(context.Background(), filter)
 	if err != nil {
-		log.Println("Error deleting movies from watchlist")
+		log.Println("Error deleting content from watchlist")
 		return 0, err
 	}
 
