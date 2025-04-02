@@ -11,8 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func AddMovieToWatchlist(movieId string, profileId string) (primitive.ObjectID, error) {
-	mId, err := primitive.ObjectIDFromHex(movieId)
+func AddContentToWatchlist(contentId string, profileId string, contentType string) (primitive.ObjectID, error) {
+	mId, err := primitive.ObjectIDFromHex(contentId)
 	if err != nil {
 		log.Printf("Invalid movieId %v\n", err)
 		return primitive.NilObjectID, err
@@ -27,6 +27,7 @@ func AddMovieToWatchlist(movieId string, profileId string) (primitive.ObjectID, 
 
 	watchlist.ProfileId = uId
 	watchlist.ContentId = mId
+	watchlist.ContentType = contentType
 	watchlist.AddedAt = time.Now()
 
 	insertedMovie, err := db.WatchlistCollection.InsertOne(context.Background(), watchlist)
