@@ -53,13 +53,13 @@ func GetMoviesFromUserWatchlist(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
 
-func DeleteMovieFromWatchlist(w http.ResponseWriter, r *http.Request) {
+func DeleteContentFromWatchlist(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	profileId := params["profileId"]
-	movieId := params["contentId"]
+	contentId := params["contentId"]
 
-	deletedDoc, err := helper.DeleteMovieFromWatchlist(profileId, movieId)
+	deletedDoc, err := helper.DeleteContentFromWatchlist(profileId, contentId)
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error deleting movie from watchlist"}, http.StatusInternalServerError)
 		return
@@ -72,10 +72,10 @@ func DeleteMovieFromWatchlist(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
 
-func DeleteAllMovieFromWatchlist(w http.ResponseWriter, r *http.Request) {
+func DeleteAllContentFromWatchlist(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	deletedCount, err := helper.DeleteAllMovieFromWatchlist(params["id"])
+	deletedCount, err := helper.DeleteAllContentFromWatchlist(params["id"], params["contentType"])
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error deleting movie from watchlist"}, http.StatusInternalServerError)
 		return
@@ -128,7 +128,3 @@ func GetShowsFromUserWatchlist(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
-
-func RemoveShowFromWatchlist(w http.ResponseWriter, r *http.Request) {}
-
-func RemoveAllShowsFromWatchlist(w http.ResponseWriter, r *http.Request) {}
