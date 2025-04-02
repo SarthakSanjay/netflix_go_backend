@@ -39,14 +39,17 @@ func AddContentToWatchlist(contentId string, profileId string, contentType strin
 	return insertedMovie.InsertedID.(primitive.ObjectID), nil
 }
 
-func GetAllMovieFromUserWatchlist(profileId string) ([]model.Movies, error) {
+func GetAllContentFromUserWatchlist(profileId string, contentType string) (interface{}, error) {
 	pId, err := primitive.ObjectIDFromHex(profileId)
 	if err != nil {
 		log.Printf("Invalid profileId: %v\n", err)
 		return nil, err
 	}
 
-	filter := bson.M{"profileId": pId}
+	filter := bson.M{
+		"profileId":   pId,
+		"contentType": contentType,
+	}
 	cursor, err := db.WatchlistCollection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
