@@ -35,10 +35,10 @@ func AddMovieToWatchlist(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
 
-func GetUserWatchlist(w http.ResponseWriter, r *http.Request) {
+func GetMoviesFromUserWatchlist(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	watchlist, err := helper.GetAllMovieFromUserWatchlist(params["id"])
+	watchlist, err := helper.GetAllContentFromUserWatchlist(params["id"], "movie")
 	if err != nil {
 		log.Println(err)
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "error finding movies in watchlist"}, http.StatusNotFound)
@@ -108,6 +108,24 @@ func AddShowToWatchlist(w http.ResponseWriter, r *http.Request) {
 		"message":   "success",
 		"contentId": insertedContentId,
 	}
+	utils.SendJSONResponse(w, data, http.StatusOK)
+}
+
+func GetShowsFromUserWatchlist(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	watchlist, err := helper.GetAllContentFromUserWatchlist(params["id"], "show")
+	if err != nil {
+		log.Println(err)
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "error finding shows in watchlist"}, http.StatusNotFound)
+		return
+	}
+
+	data := map[string]interface{}{
+		"message":   "success",
+		"watchlist": watchlist,
+	}
+
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
 
