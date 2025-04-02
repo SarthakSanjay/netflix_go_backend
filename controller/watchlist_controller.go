@@ -13,7 +13,7 @@ import (
 )
 
 func AddMovieToWatchlist(w http.ResponseWriter, r *http.Request) {
-	var req dto.AddMovieDTO
+	var req dto.AddContentDTO
 	json.NewDecoder(r.Body).Decode(&req)
 
 	profileId := req.ProfileId.Hex()
@@ -21,7 +21,7 @@ func AddMovieToWatchlist(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(profileId, contentId)
 	// fmt.Println("body", r.Body)
-	insertedContentId, err := helper.AddMovieToWatchlist(contentId, profileId)
+	insertedContentId, err := helper.AddContentToWatchlist(contentId, profileId, "movie")
 	if err != nil {
 		utils.SendJSONResponse(w, map[string]string{"error": "error adding movie to watchlist"},
 			http.StatusInternalServerError)
@@ -87,3 +87,30 @@ func DeleteAllMovieFromWatchlist(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.SendJSONResponse(w, data, http.StatusOK)
 }
+
+func AddShowToWatchlist(w http.ResponseWriter, r *http.Request) {
+	var req dto.AddContentDTO
+	json.NewDecoder(r.Body).Decode(&req)
+
+	profileId := req.ProfileId.Hex()
+	contentId := req.ContentId.Hex()
+
+	fmt.Println(profileId, contentId)
+	// fmt.Println("body", r.Body)
+	insertedContentId, err := helper.AddContentToWatchlist(contentId, profileId, "show")
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "error adding movie to watchlist"},
+			http.StatusInternalServerError)
+		return
+	}
+
+	data := map[string]interface{}{
+		"message":   "success",
+		"contentId": insertedContentId,
+	}
+	utils.SendJSONResponse(w, data, http.StatusOK)
+}
+
+func RemoveShowFromWatchlist(w http.ResponseWriter, r *http.Request) {}
+
+func RemoveAllShowsFromWatchlist(w http.ResponseWriter, r *http.Request) {}
