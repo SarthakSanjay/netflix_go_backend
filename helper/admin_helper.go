@@ -115,24 +115,38 @@ func UpdateMovie(movieId string, updates model.Movies) (int64, error) {
 	return result.ModifiedCount, nil
 }
 
-func DeleteMovie(movieId string) (int64, error) {
-	id, err := primitive.ObjectIDFromHex(movieId)
+func DeleteContent(contentId string, contentType string) (int64, error) {
+	id, err := primitive.ObjectIDFromHex(contentId)
 	if err != nil {
-		log.Printf("Invalid movieId : %v\n", err)
+		if contentType == "movie" {
+			log.Printf("Invalid movieId : %v\n", err)
+		} else {
+			log.Printf("Invalid showId : %v\n", err)
+		}
 		return 0, err
 	}
 
 	filter := bson.M{"_id": id}
+	if contentType == "movie" {
+		result, err := db.MoviesCollection.DeleteOne(context.Background(), filter)
+		if err != nil {
+			log.Printf("Error deleting movie : %v\n", err)
+			return 0, err
+		}
+		fmt.Println("Deleted movie ", result.DeletedCount)
 
-	result, err := db.MoviesCollection.DeleteOne(context.Background(), filter)
-	if err != nil {
-		log.Printf("Error deleting movie : %v\n", err)
-		return 0, err
+		return result.DeletedCount, nil
+
+	} else {
+		result, err := db.ShowsCollection.DeleteOne(context.Background(), filter)
+		if err != nil {
+			log.Printf("Error deleting show : %v\n", err)
+			return 0, err
+		}
+		fmt.Println("Deleted show ", result.DeletedCount)
+
+		return result.DeletedCount, nil
 	}
-
-	fmt.Println("Deleted movie ", result.DeletedCount)
-
-	return result.DeletedCount, nil
 }
 
 func DeleteAllMovie() (int64, error) {
