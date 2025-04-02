@@ -41,7 +41,7 @@ func DeleteMovie(w http.ResponseWriter, r *http.Request) {
 		utils.SendJSONResponse(w, map[string]string{"error": "Invalid movie id"}, http.StatusBadRequest)
 		return
 	}
-	count, err := helper.DeleteMovie(params["id"])
+	count, err := helper.DeleteContent(params["id"], "movie")
 	if err != nil {
 		utils.SendJSONResponse(w, map[string]string{"error": "Failed to delete movie"}, http.StatusInternalServerError)
 		return
@@ -134,4 +134,26 @@ func CreateShow(w http.ResponseWriter, r *http.Request) {
 		"show":           &show,
 	}
 	utils.SendJSONResponse(w, respose, http.StatusCreated)
+}
+
+func DeleteShow(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	if len(params["id"]) != 24 {
+		utils.SendJSONResponse(w, map[string]string{"error": "Invalid movie id"}, http.StatusBadRequest)
+		return
+	}
+	count, err := helper.DeleteContent(params["id"], "show")
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Failed to delete movie"}, http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"message": "successfully deleted movie",
+		"id":      params["id"],
+		"count":   count,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
