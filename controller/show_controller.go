@@ -77,7 +77,7 @@ func GetTrendingShows(w http.ResponseWriter, r *http.Request) {
 		http.StatusOK)
 }
 
-func getSimilarShows(w http.ResponseWriter, r *http.Request) {
+func GetSimilarShows(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	shows, err := helper.GetShowById(params["id"])

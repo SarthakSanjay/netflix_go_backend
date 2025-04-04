@@ -20,6 +20,7 @@ func Router() *mux.Router {
 	MovieRoutes(protectedRoutes)
 	WatchlistRoutes(protectedRoutes)
 	FavRoutes(protectedRoutes)
+	ShowRoutes(protectedRoutes)
 
 	return router
 }
