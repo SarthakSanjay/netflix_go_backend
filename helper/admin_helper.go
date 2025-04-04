@@ -149,14 +149,23 @@ func DeleteContent(contentId string, contentType string) (int64, error) {
 	}
 }
 
-func DeleteAllMovie() (int64, error) {
-	movie, err := db.MoviesCollection.DeleteMany(context.Background(), bson.D{{}})
-	if err != nil {
-		log.Printf("Error delete all movies : %v\n", err)
-		return 0, err
+func DeleteAllContent(contentType string) (int64, error) {
+	if contentType == "movie" {
+		movie, err := db.MoviesCollection.DeleteMany(context.Background(), bson.D{{}})
+		if err != nil {
+			log.Printf("Error delete all movies : %v\n", err)
+			return 0, err
+		}
+		fmt.Println("Deleted all movies")
+		return movie.DeletedCount, nil
+	} else {
+		show, err := db.ShowsCollection.DeleteMany(context.Background(), bson.D{{}})
+		if err != nil {
+			log.Println("Error deleting all shows")
+			return 0, err
+		}
+		return show.DeletedCount, nil
 	}
-	fmt.Println("Deleted all movies")
-	return movie.DeletedCount, nil
 }
 
 func InsertShow(show model.Show) (primitive.ObjectID, error) {
