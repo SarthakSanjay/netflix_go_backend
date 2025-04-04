@@ -57,7 +57,7 @@ func DeleteMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAllMovie(w http.ResponseWriter, r *http.Request) {
-	count, err := helper.DeleteAllMovie()
+	count, err := helper.DeleteAllContent("movie")
 	if err != nil {
 		utils.SendJSONResponse(w, map[string]string{"error": "Error deleting All Movies"}, http.StatusInternalServerError)
 		return
@@ -152,6 +152,20 @@ func DeleteShow(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
 		"message": "successfully deleted movie",
 		"id":      params["id"],
+		"count":   count,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
+}
+
+func DeleteAllShow(w http.ResponseWriter, r *http.Request) {
+	count, err := helper.DeleteAllContent("show")
+	if err != nil {
+		utils.SendJSONResponse(w, map[string]string{"error": "Error deleting All Shows"}, http.StatusInternalServerError)
+		return
+	}
+	response := map[string]interface{}{
+		"message": "successfull deleted all shows",
 		"count":   count,
 	}
 
