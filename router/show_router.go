@@ -22,4 +22,7 @@ func ShowRoutes(protectedRoutes *mux.Router) {
 	protectedRoutes.HandleFunc("/shows/{genre}", controller.GetShowByGenre).Methods(("GET"))
 
 	protectedRoutes.HandleFunc("/shows/trending", controller.GetTrendingShows).Methods("GET")
+
+	protectedRoutes.HandleFunc("/show/season", controller.InsertSeason).Methods("POST")
+	protectedRoutes.HandleFunc("/show/episode", controller.InsertEpisode).Methods("POST")
 }
