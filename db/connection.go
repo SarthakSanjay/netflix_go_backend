@@ -22,6 +22,8 @@ var (
 	UserCollection      *mongo.Collection
 	ProfileCollection   *mongo.Collection
 	FavoriteCollection  *mongo.Collection
+	SeasonsCollection   *mongo.Collection
+	EpisodesCollection  *mongo.Collection
 	client              *mongo.Client // Store the client to close it later
 )
 
@@ -57,13 +59,17 @@ func ConnectDB() {
 	fmt.Println("✅ MongoDB connection established successfully!")
 
 	// Assign collections
-	WatchlistCollection = client.Database(dbName).Collection("watchlist")
-	MoviesCollection = client.Database(dbName).Collection("movies")
-	ShowsCollection = client.Database(dbName).Collection("shows")
 	UserCollection = client.Database(dbName).Collection("user")
+
 	ProfileCollection = client.Database(dbName).Collection("profile")
 	FavoriteCollection = client.Database(dbName).Collection("favorite")
+	WatchlistCollection = client.Database(dbName).Collection("watchlist")
 
+	MoviesCollection = client.Database(dbName).Collection("movies")
+
+	ShowsCollection = client.Database(dbName).Collection("shows")
+	SeasonsCollection = client.Database(dbName).Collection("seasons")
+	EpisodesCollection = client.Database(dbName).Collection("episodes")
 	fmt.Println("✅ Collection instances are ready!")
 }
 
