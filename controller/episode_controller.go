@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func GetEpisode(w http.ResponseWriter, r *http.Request) {
+func GetSeasonEpisodes(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	filter := bson.M{
