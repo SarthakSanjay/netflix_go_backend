@@ -24,6 +24,7 @@ var (
 	FavoriteCollection  *mongo.Collection
 	SeasonsCollection   *mongo.Collection
 	EpisodesCollection  *mongo.Collection
+	CastCollection      *mongo.Collection
 	client              *mongo.Client // Store the client to close it later
 )
 
@@ -70,6 +71,8 @@ func ConnectDB() {
 	ShowsCollection = client.Database(dbName).Collection("shows")
 	SeasonsCollection = client.Database(dbName).Collection("seasons")
 	EpisodesCollection = client.Database(dbName).Collection("episodes")
+
+	CastCollection = client.Database(dbName).Collection("cast")
 	fmt.Println("✅ Collection instances are ready!")
 }
 
