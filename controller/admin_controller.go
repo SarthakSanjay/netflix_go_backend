@@ -1,15 +1,18 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/sarthaksanjay/netflix-go/db"
 	"github.com/sarthaksanjay/netflix-go/dto"
 	"github.com/sarthaksanjay/netflix-go/helper"
 	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/utils"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func CreateMovie(w http.ResponseWriter, r *http.Request) {
@@ -170,4 +173,47 @@ func DeleteAllShow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
+}
+
+func AddCast(w http.ResponseWriter, r *http.Request) {
+	var cast model.Cast
+	err := json.NewDecoder(r.Body).Decode(&cast)
+	if err != nil {
+		log.Println("Error decoding body")
+		return
+	}
+
+	result, err := db.CastCollection.InsertOne(context.Background(), cast)
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "error inserting data"}, http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: result.InsertedID}, http.StatusOK)
+}
+
+func GetCast(w http.ResponseWriter, r *http.Request) {
+	cursor, err := db.CastCollection.Find(context.Background(), bson.D{})
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "error finding cast"}, http.StatusInternalServerError)
+		return
+	}
+	defer cursor.Close(context.Background())
+
+	var casts []model.Cast
+
+	for cursor.Next(context.Background()) {
+		var cast model.Cast
+		err := cursor.Decode(&cast)
+		if err != nil {
+			log.Printf("Error decoding cast %v\n", err)
+			continue
+		}
+		casts = append(casts, cast)
+	}
+
+	utils.SendJSONResponse(w, dto.SuccessResponse{
+		Message: "success",
+		Data:    casts,
+	}, http.StatusOK)
 }
