@@ -11,16 +11,31 @@ import (
 	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetSeasonEpisodes(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	filter := bson.M{
-		"showId":   params["showId"],
-		"seasonId": params["seasonId"],
+	showId, err := primitive.ObjectIDFromHex(params["showId"])
+	if err != nil {
+		log.Println("Invalid showID")
+		return
 	}
-	cursor, err := db.SeasonsCollection.Find(context.Background(), filter)
+
+	seasonId, err := primitive.ObjectIDFromHex(params["seasonId"])
+	if err != nil {
+		log.Println("Invalid seasonId")
+		return
+	}
+
+	log.Println("showId and seasonID", showId, seasonId)
+
+	filter := bson.M{
+		"showId":   showId,
+		"seasonId": seasonId,
+	}
+	cursor, err := db.EpisodesCollection.Find(context.Background(), filter)
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error fetching episodes"}, http.StatusInternalServerError)
 		return
