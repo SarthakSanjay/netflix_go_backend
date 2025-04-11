@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -115,7 +114,6 @@ func GetMoviesByGenre(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTrendingMovies(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("TrendingMovie")
 	movies, err := helper.TrendingMovie()
 	if err != nil {
 		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "error finding movies"}, http.StatusInternalServerError)
