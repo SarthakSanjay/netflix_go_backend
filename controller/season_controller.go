@@ -11,13 +11,19 @@ import (
 	"github.com/sarthaksanjay/netflix-go/model"
 	"github.com/sarthaksanjay/netflix-go/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetSeasons(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
+	showId, err := primitive.ObjectIDFromHex(params["showId"])
+	if err != nil {
+		log.Println("Invalid showId")
+		return
+	}
 	filter := bson.M{
-		"showId": params["showId"],
+		"showId": showId,
 	}
 	cursor, err := db.SeasonsCollection.Find(context.Background(), filter)
 	if err != nil {
