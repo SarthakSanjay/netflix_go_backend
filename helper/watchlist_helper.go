@@ -2,6 +2,7 @@ package helper
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -54,7 +55,6 @@ func GetAllContentFromUserWatchlist(profileId string, contentType string) (inter
 	if err != nil {
 		return nil, err
 	}
-
 	defer cursor.Close(context.Background())
 
 	var watchlistItems []model.Watchlist
@@ -63,30 +63,52 @@ func GetAllContentFromUserWatchlist(profileId string, contentType string) (inter
 	}
 
 	if len(watchlistItems) == 0 {
-		return []model.Movies{}, nil
+		// Return empty array based on contentType
+		if contentType == "movie" {
+			return []model.Movies{}, nil
+		}
+		return []model.Show{}, nil
 	}
 
-	var movieIDs []primitive.ObjectID
+	var contentIDs []primitive.ObjectID
 	for _, item := range watchlistItems {
-		movieIDs = append(movieIDs, item.ContentId)
+		contentIDs = append(contentIDs, item.ContentId)
 	}
 
-	movieFilter := bson.M{
-		"_id": bson.M{"$in": movieIDs},
-	}
-	movieCursor, err := db.MoviesCollection.Find(context.Background(), movieFilter)
-	if err != nil {
-		return nil, err
+	contentFilter := bson.M{
+		"_id": bson.M{"$in": contentIDs},
 	}
 
-	defer movieCursor.Close(context.Background())
+	switch contentType {
+	case "movie":
+		movieCursor, err := db.MoviesCollection.Find(context.Background(), contentFilter)
+		if err != nil {
+			return nil, err
+		}
+		defer movieCursor.Close(context.Background())
 
-	var movies []model.Movies
-	if err := movieCursor.All(context.Background(), &movies); err != nil {
-		return nil, nil
+		var movies []model.Movies
+		if err := movieCursor.All(context.Background(), &movies); err != nil {
+			return nil, err
+		}
+		return movies, nil
+
+	case "show":
+		showCursor, err := db.ShowsCollection.Find(context.Background(), contentFilter)
+		if err != nil {
+			return nil, err
+		}
+		defer showCursor.Close(context.Background())
+
+		var shows []model.Show
+		if err := showCursor.All(context.Background(), &shows); err != nil {
+			return nil, err
+		}
+		return shows, nil
+
+	default:
+		return nil, fmt.Errorf("unsupported contentType: %s", contentType)
 	}
-
-	return movies, nil
 }
 
 func DeleteContentFromWatchlist(profileId string, contentId string) (bson.M, error) {
