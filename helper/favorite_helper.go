@@ -67,7 +67,10 @@ func GetUserFavoriteMoviesFromProfile(profileId string) ([]model.Movies, error) 
 		return nil, err
 	}
 
-	filter := bson.M{"profileId": pId}
+	filter := bson.M{
+		"profileId":   pId,
+		"contentType": "movie",
+	}
 	cursor, err := db.FavoriteCollection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
@@ -105,4 +108,51 @@ func GetUserFavoriteMoviesFromProfile(profileId string) ([]model.Movies, error) 
 	}
 
 	return movies, nil
+}
+
+func GetUserFavoriteShowsFromProfile(profileId string) ([]model.Show, error) {
+	pId, err := primitive.ObjectIDFromHex(profileId)
+	if err != nil {
+		log.Printf("Invalid profileId: %v\n", err)
+		return nil, err
+	}
+
+	filter := bson.M{"profileId": pId, "contentType": "show"}
+	cursor, err := db.FavoriteCollection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(context.Background())
+
+	var favoriteItems []model.Favorite
+	if err := cursor.All(context.Background(), &favoriteItems); err != nil {
+		return nil, err
+	}
+
+	if len(favoriteItems) == 0 {
+		return []model.Show{}, nil
+	}
+
+	var showIDs []primitive.ObjectID
+	for _, item := range favoriteItems {
+		showIDs = append(showIDs, item.ContentId)
+	}
+
+	showFilter := bson.M{
+		"_id": bson.M{"$in": showIDs},
+	}
+	showCursor, err := db.ShowsCollection.Find(context.Background(), showFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer showCursor.Close(context.Background())
+
+	var shows []model.Show
+	if err := showCursor.All(context.Background(), &shows); err != nil {
+		return nil, nil
+	}
+
+	return shows, nil
 }
