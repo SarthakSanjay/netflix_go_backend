@@ -45,7 +45,18 @@ func GetAllMoviesFromUsersProfileFavorite(w http.ResponseWriter, r *http.Request
 
 	favorites, err := helper.GetUserFavoriteMoviesFromProfile(params["id"])
 	if err != nil {
-		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error finding users favorite"}, http.StatusInternalServerError)
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error finding users favorite movies"}, http.StatusInternalServerError)
+	}
+
+	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: favorites}, http.StatusOK)
+}
+
+func GetAllShowsFromUsersProfileFavorite(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	favorites, err := helper.GetUserFavoriteShowsFromProfile(params["id"])
+	if err != nil {
+		utils.SendJSONResponse(w, dto.ErrorResponseDTO{Error: "Error finding users favorite shows"}, http.StatusInternalServerError)
 	}
 
 	utils.SendJSONResponse(w, dto.SuccessResponse{Message: "success", Data: favorites}, http.StatusOK)
